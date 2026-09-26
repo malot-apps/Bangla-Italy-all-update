@@ -20,6 +20,7 @@ import {
   Calculator,
   Globe,
   Languages,
+  Clock,
 } from 'lucide-react';
 import GoogleTranslateWidget from './GoogleTranslateWidget';
 import { PWAInstallButton } from './PWAController';
@@ -72,6 +73,7 @@ export default function Navbar({
     { id: 'legal', label: t('navLegal', 'পারমেসো ও লিগ্যাল'), icon: ShieldCheck },
     { id: 'letters', label: t('navLetters', 'চিঠির ফরম্যাট'), icon: FileText, badge: 'PDF' },
     { id: 'directory', label: t('navDirectory', 'লোকাল ডিরেক্টরি'), icon: MapPin },
+    { id: 'prayer-times', label: t('navPrayer', 'নামাজের সময়সূচি'), icon: Clock },
     { id: 'room-job-board', label: currentLang === 'bn' ? 'চাকরি ও রুম' : currentLang === 'en' ? 'Jobs & Rooms' : 'Lavoro e Casa', icon: Home, badge: currentLang === 'bn' ? 'নতুন' : 'NEW' },
     { id: 'italy-probashi', label: currentLang === 'bn' ? 'প্রবাসী নিউজ ও ভিডিও' : currentLang === 'en' ? 'Community News & Video' : 'Notizie e Video', icon: Globe, badge: 'HOT' },
     { id: 'news-media', label: t('navNews', 'তাজা খবর ও টিভি'), icon: Tv, badge: currentLang === 'bn' ? 'লাইভ' : 'LIVE' },

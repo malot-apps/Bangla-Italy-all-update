@@ -3,6 +3,7 @@ import { Hind_Siliguri, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import PWAController from '@/components/PWAController';
 import { LanguageProvider } from '@/lib/LanguageContext';
+import { AdminConfigProvider } from '@/lib/AdminConfigContext';
 
 const hindSiliguri = Hind_Siliguri({
   weight: ['300', '400', '500', '600', '700'],
@@ -65,8 +66,10 @@ export default function RootLayout({
     <html lang="bn" className={`scroll-smooth ${hindSiliguri.variable} ${plusJakarta.variable}`}>
       <body className="font-sans antialiased selection:bg-emerald-500 selection:text-white bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300" suppressHydrationWarning>
         <LanguageProvider>
-          <PWAController />
-          {children}
+          <AdminConfigProvider>
+            <PWAController />
+            {children}
+          </AdminConfigProvider>
         </LanguageProvider>
       </body>
     </html>

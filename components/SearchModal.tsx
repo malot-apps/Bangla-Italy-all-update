@@ -12,6 +12,7 @@ import {
   Sparkles,
   BellRing,
   Briefcase,
+  Clock,
 } from 'lucide-react';
 import {
   ITALIAN_PHRASES,
@@ -114,7 +115,24 @@ export default function SearchModal({
       ).slice(0, 3)
     : [];
 
+  const matchingPrayer =
+    Boolean(q) &&
+    ('নামাজের সময়সূচি'.includes(q) ||
+      'নামাজ'.includes(q) ||
+      'prayer'.includes(q) ||
+      'namaz'.includes(q) ||
+      'azan'.includes(q) ||
+      'আজান'.includes(q) ||
+      'রোজা'.includes(q) ||
+      'ইফতার'.includes(q) ||
+      'সাহরি'.includes(q) ||
+      'preghiera'.includes(q) ||
+      'iftar'.includes(q) ||
+      'qibla'.includes(q) ||
+      'কিবলা'.includes(q));
+
   const hasResults =
+    matchingPrayer ||
     matchingPhrases.length > 0 ||
     matchingGuides.length > 0 ||
     matchingLetters.length > 0 ||
@@ -158,7 +176,7 @@ export default function SearchModal({
 
               {/* Popular Search Suggestions */}
               <div className="mt-6 flex flex-wrap gap-2 justify-center">
-                {['পারমেসো রিনিউ', 'Busta paga', 'SPID তৈরি', 'বাসা ছাড়ার চিঠি', 'বিকাশ রেমিট্যান্স', 'ডাক্তার অ্যাপয়েন্টমেন্ট'].map(
+                {['নামাজের সময়সূচি', 'পারমেসো রিনিউ', 'Busta paga', 'SPID তৈরি', 'বাসা ছাড়ার চিঠি', 'বিকাশ রেমিট্যান্স'].map(
                   (sug) => (
                     <button
                       key={sug}
@@ -180,6 +198,32 @@ export default function SearchModal({
             </div>
           ) : (
             <div className="space-y-6">
+              {/* Prayer Times Highlight if matched */}
+              {matchingPrayer && (
+                <div>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>দৈনিক ইসলামিক সময়সূচি</span>
+                  </h4>
+                  <div
+                    onClick={() => {
+                      onSelectResult('prayer-times');
+                      onClose();
+                    }}
+                    className="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-300/80 dark:border-emerald-800 transition-all cursor-pointer flex items-center justify-between"
+                  >
+                    <div>
+                      <span className="font-bold text-sm text-slate-900 dark:text-white block">
+                        ইতালিতে আজকের ইসলামিক নামাজের সময়সূচি (রোম, মিলান, ভেনিস ও জিপিএস)
+                      </span>
+                      <span className="text-xs text-emerald-700 dark:text-emerald-300">
+                        ৫ ওয়াক্ত নামাজ, সাহরি ও ইফতারের সময়, কিবলা দিক ও আজানের সুর
+                      </span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                </div>
+              )}
               {/* Phrases */}
               {matchingPhrases.length > 0 && (
                 <div>

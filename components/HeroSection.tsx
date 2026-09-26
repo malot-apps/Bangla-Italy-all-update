@@ -18,6 +18,7 @@ import {
   Home,
   MapPin,
   Calculator,
+  Clock,
 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 
@@ -92,6 +93,14 @@ export default function HeroSection({ onQuickAction, onEmbassyNoticeClick }: Her
       color: 'from-teal-600 to-emerald-800',
       borderColor: 'border-teal-400/40',
       action: () => onQuickAction('room-job-board'),
+    },
+    {
+      title: 'নামাজের সময়সূচি',
+      subtitle: 'রোম, মিলান ও ৫ ওয়াক্ত আজান',
+      icon: Clock,
+      color: 'from-emerald-700 to-teal-800',
+      borderColor: 'border-emerald-400/40',
+      action: () => onQuickAction('prayer-times'),
     },
     {
       title: 'দূতাবাস ও কনস্যুলেট',

@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="bn" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ইতালিপ্রবাসী ডটকম - ItalyProbashi Portal & Admin</title>
+  <meta name="description" content="ইতালিতে বসবাসরত প্রবাসী বাংলাদেশিদের জন্য সর্বাত্মক ও নির্ভরযোগ্য সেবা পোর্টাল, লাইভ ইউরো রেট, আইনি সহায়িকা ও অ্যাডমিন কন্ট্রোল।">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            emerald: {
+              850: '#064232',
+              950: '#022c22',
+            },
+            gold: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- FontAwesome 6 Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Google Fonts: Hind Siliguri & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+    }
+    .font-latin {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    /* Running Marquee Animation */
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-marquee {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 25s linear infinite;
+    }
+    .animate-marquee:hover {
+      animation-play-state: paused;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- ========================================== -->
+  <!-- TOP EMERGENCY NOTIFICATION TICKER          -->
+  <!-- ========================================== -->
+  <div id="notice-ticker-container" class="bg-gradient-to-r from-red-950 via-red-900 to-amber-950 text-amber-100 text-xs py-2 px-4 border-b border-red-800 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-2 overflow-hidden flex-1 max-w-6xl mx-auto">
+      <span class="bg-red-600 text-white font-bold px-2 py-0.5 rounded text-2xs uppercase shrink-0 animate-pulse flex items-center gap-1">
+        <i class="fa-solid fa-bullhorn"></i> <span id="ticker-badge-text">জরুরি নোটিস</span>
+      </span>
+      <div class="overflow-hidden w-full">
+        <span id="ticker-live-text" class="animate-marquee font-medium">
+          রোম ও মিলান বাংলাদেশ দূতাবাসের বিশেষ কনস্যুলার সেবা চলছে · অবৈধ দালাল এড়িয়ে সরাসরি অনুমোদিত CAF অফিসে যোগাযোগ করুন।
+        </span>
+      </div>
+    </div>
+    <button onclick="dismissTicker()" class="text-amber-300 hover:text-white p-1 ml-2 shrink-0">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- NAVBAR WITH 3-LANGUAGE & THEME TOGGLE       -->
+  <!-- ========================================== -->
+  <header class="sticky top-0 z-40 bg-emerald-950/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-emerald-800/80 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Brand Logo -->
+        <a href="#" class="flex items-center gap-2.5 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white font-extrabold text-xl shadow-md border border-emerald-400/40 group-hover:scale-105 transition-transform">
+            🇮🇹
+          </div>
+          <div>
+            <span class="text-xl font-extrabold text-white tracking-tight">
+              ইতালিপ্রবাসী<span class="text-amber-400">.কম</span>
+            </span>
+            <span class="block text-3xs text-emerald-300 font-latin uppercase tracking-wider">ItalyProbashi Portal</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-emerald-100">
+          <a href="#currency" class="hover:text-amber-300 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-coins text-amber-400"></i> <span data-i18n="navCurrency">ইউরো রেট</span>
+          </a>
+          <a href="#phrases" class="hover:text-amber-300 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-language text-emerald-400"></i> <span data-i18n="navPhrases">ভাষা ও বাক্য</span>
+          </a>
+          <a href="#prayers" class="hover:text-amber-300 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-clock text-amber-400"></i> <span data-i18n="navPrayers">নামাজের সময়</span>
+          </a>
+          <a href="#directory" class="hover:text-amber-300 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-building text-emerald-400"></i> <span data-i18n="navDirectory">লোকাল ডিরেক্টরি</span>
+          </a>
+          <a href="#news" class="hover:text-amber-300 transition-colors flex items-center gap-1">
+            <i class="fa-solid fa-newspaper text-amber-400"></i> <span data-i18n="navNews">সংবাদ ও লাইভ</span>
+          </a>
+        </nav>
+
+        <!-- Right Controls: Language Selector, Dark Mode, Emergency Hotlines -->
+        <div class="flex items-center gap-3">
+          <!-- 3-Language Toggle -->
+          <div class="relative bg-emerald-900/80 rounded-lg p-0.5 border border-emerald-700/60 flex items-center text-xs font-bold text-white">
+            <button onclick="setAppLanguage('bn')" id="lang-btn-bn" class="px-2.5 py-1 rounded-md transition-colors bg-amber-500 text-slate-950 font-bold">বাং</button>
+            <button onclick="setAppLanguage('en')" id="lang-btn-en" class="px-2.5 py-1 rounded-md transition-colors text-emerald-200 hover:text-white">EN</button>
+            <button onclick="setAppLanguage('it')" id="lang-btn-it" class="px-2.5 py-1 rounded-md transition-colors text-emerald-200 hover:text-white">IT</button>
+          </div>
+
+          <!-- Theme Dark/Light Toggle -->
+          <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-emerald-900/60 hover:bg-emerald-800 text-amber-300 hover:text-amber-200 border border-emerald-700/50 transition-colors" title="Toggle Theme">
+            <i id="theme-icon" class="fa-solid fa-moon"></i>
+          </button>
+
+          <!-- Emergency Hotline Quick CTA -->
+          <a href="#emergency" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-bold text-xs shadow-md transition-transform active:scale-95">
+            <i class="fa-solid fa-phone-volume"></i>
+            <span data-i18n="sosButton">জরুরি ১১২ / ১১৮</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- 1. STRATEGIC AD SLOT: TOP HEADER BANNER    -->
+  <!-- ========================================== -->
+  <div id="ad-top-banner" class="w-full max-w-5xl mx-auto px-4 my-3">
+    <!-- Rendered via JS based on Admin Settings -->
+  </div>
+
+  <!-- ========================================== -->
+  <!-- HERO SECTION                               -->
+  <!-- ========================================== -->
+  <section class="relative overflow-hidden py-10 sm:py-16 bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-900 text-white border-b border-emerald-800/40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-800/80 border border-emerald-600/50 text-amber-300 text-xs font-semibold mb-4">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span data-i18n="heroBadge">ইতালি প্রবাসী বাংলাদেশিদের সর্বাত্মক পোর্টাল</span>
+      </span>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight max-w-3xl mx-auto leading-tight">
+        <span data-i18n="heroTitle">ইতালিতে আপনার নতুন জীবন, কাজ ও অধিকারের বিশ্বস্ত সঙ্গী</span>
+      </h1>
+
+      <p class="mt-4 text-sm sm:text-base text-emerald-200 max-w-2xl mx-auto leading-relaxed" data-i18n="heroSubtitle">
+        পারমেসো দি সোজ্জোর্নো, স্পিড, কোদিচে ফিস্কালে, লাইভ ইউরো রেট, নিত্যদিনের ইতালিয়ান ভাষা অনুবাদক এবং আইনি সহায়তার বিশ্বস্ত ঠিকানা।
+      </p>
+
+      <!-- Quick Action Badges -->
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a href="#currency" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm shadow-lg flex items-center gap-2 transition-transform active:scale-95">
+          <i class="fa-solid fa-calculator"></i>
+          <span data-i18n="heroCtaRate">ইউরো টু টাকা কনভার্টার</span>
+        </a>
+        <a href="#phrases" class="px-5 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-sm border border-emerald-600 shadow-md flex items-center gap-2 transition-transform active:scale-95">
+          <i class="fa-solid fa-volume-high"></i>
+          <span data-i18n="heroCtaAudio">ইতালিয়ান ভাষা ও অডিও</span>
+        </a>
+        <button onclick="triggerDirectLinkPromo()" class="px-5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-300 font-bold text-sm border border-amber-500/40 shadow-md flex items-center gap-2 transition-transform active:scale-95">
+          <i class="fa-solid fa-file-arrow-down"></i>
+          <span data-i18n="heroCtaPdf">পিডিএফ গাইড ডাউনলোড</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. LIVE EUR TO BDT CALCULATOR               -->
+  <!-- ========================================== -->
+  <section id="currency" class="py-12 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-1">
+          <i class="fa-solid fa-coins"></i> <span data-i18n="rateBadge">বাংলাদেশ ব্যাংক ও মানি এক্সচেঞ্জ রেট</span>
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white" data-i18n="rateTitle">
+          লাইভ ইউরো (EUR) টু টাকা (BDT) ক্যালকুলেটর
+        </h2>
+        <p id="rate-source-note" class="text-xs text-slate-500 mt-1">
+          ব্যাংক অফ ইতালি ও বাংলাদেশ ব্যাংক রেট + ২.৫% সরকারি রেমিট্যান্স প্রণোদনা অন্তর্ভুক্ত
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <!-- Input Form Card -->
+        <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-2">
+            ইউরো পরিমাণ (Euro Amount):
+          </label>
+          <div class="relative mb-4">
+            <span class="absolute left-4 top-3 text-slate-400 font-bold text-lg">€</span>
+            <input
+              type="number"
+              id="calc-euro-input"
+              value="500"
+              oninput="calculateExchange()"
+              class="w-full pl-9 pr-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-lg font-bold font-latin focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+
+          <!-- Quick Amount Buttons -->
+          <div class="flex flex-wrap gap-1.5 mb-5">
+            <button onclick="setCalcEuro(100)" class="px-2.5 py-1 rounded bg-slate-200 dark:bg-slate-700 text-xs font-bold hover:bg-emerald-600 hover:text-white transition-colors">€100</button>
+            <button onclick="setCalcEuro(300)" class="px-2.5 py-1 rounded bg-slate-200 dark:bg-slate-700 text-xs font-bold hover:bg-emerald-600 hover:text-white transition-colors">€300</button>
+            <button onclick="setCalcEuro(500)" class="px-2.5 py-1 rounded bg-slate-200 dark:bg-slate-700 text-xs font-bold hover:bg-emerald-600 hover:text-white transition-colors">€500</button>
+            <button onclick="setCalcEuro(1000)" class="px-2.5 py-1 rounded bg-slate-200 dark:bg-slate-700 text-xs font-bold hover:bg-emerald-600 hover:text-white transition-colors">€1000</button>
+            <button onclick="setCalcEuro(2000)" class="px-2.5 py-1 rounded bg-slate-200 dark:bg-slate-700 text-xs font-bold hover:bg-emerald-600 hover:text-white transition-colors">€2000</button>
+          </div>
+
+          <!-- Active Rate Indicators -->
+          <div class="text-xs text-slate-600 dark:text-slate-400 space-y-1 pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between">
+              <span>বেস রেট (১ EUR):</span>
+              <span id="display-base-rate" class="font-bold text-slate-900 dark:text-white font-latin">133.25 ৳</span>
+            </div>
+            <div class="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
+              <span>সরকারি ব্যাংক বোনাস:</span>
+              <span id="display-incentive-rate" class="font-bold font-latin">+2.5%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Output Card -->
+        <div class="p-6 rounded-2xl bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 text-white shadow-xl border border-emerald-700/60">
+          <span class="text-xs font-bold text-amber-300 uppercase tracking-widest block mb-1">
+            মোট প্রাপক পাবেন (TOTAL BDT)
+          </span>
+          <div class="text-3xl sm:text-4xl font-extrabold font-latin tracking-tight text-white mb-2" id="calc-total-bdt">
+            68,290 ৳
+          </div>
+
+          <div class="space-y-2 mt-4 pt-4 border-t border-emerald-800 text-xs text-emerald-200">
+            <div class="flex justify-between">
+              <span>মূল বিনিময় মান:</span>
+              <span id="calc-standard-bdt" class="font-bold font-latin">66,625 ৳</span>
+            </div>
+            <div class="flex justify-between text-amber-300 font-bold">
+              <span>+ ২.৫% প্রণোদনা যোগ:</span>
+              <span id="calc-bonus-bdt" class="font-latin">+1,665 ৳</span>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-3">
+            <button onclick="triggerDirectLinkPromo()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>বিকাশ ও ব্যাংকে টাকা পাঠান</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. STRATEGIC AD SLOT: IN-FEED NATIVE AD    -->
+  <!-- ========================================== -->
+  <div id="ad-native-infeed" class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-6">
+    <!-- Rendered via JS based on Admin Settings -->
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. 3-LANGUAGE TRANSLATOR & QUICK PHRASES   -->
+  <!-- ========================================== -->
+  <section id="phrases" class="py-12 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-1">
+            <i class="fa-solid fa-volume-high"></i> <span data-i18n="phraseBadge">ভয়েস উচ্চারণ সহ ইতালিয়ান ভাষা শিক্ষা</span>
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white" data-i18n="phraseTitle">
+            নিত্যদিনের দরকারি ইতালিয়ান বাক্য ও কথা
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1" data-i18n="phraseSubtitle">
+            ইতালি পৌঁছে সুপারমার্কেট, হাসপাতাল, বাস-ট্রেন ও কাজের জায়গায় সহজে কথা বলুন।
+          </p>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="flex flex-wrap gap-1.5" id="phrase-category-buttons">
+          <button onclick="filterPhrases('all')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-700 text-white shadow-xs" data-cat="all">সব বাক্য</button>
+          <button onclick="filterPhrases('supermarket')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700" data-cat="supermarket">সুপারমার্কেট</button>
+          <button onclick="filterPhrases('hospital')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700" data-cat="hospital">হাসপাতাল ও ডাক্তার</button>
+          <button onclick="filterPhrases('transport')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700" data-cat="transport">বাস ও ট্রেন</button>
+          <button onclick="filterPhrases('work')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700" data-cat="work">কাজের জায়গা</button>
+        </div>
+      </div>
+
+      <!-- Phrase Cards Grid -->
+      <div id="phrase-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 5. ISLAMIC PRAYER TIMES FOR MAJOR CITIES   -->
+  <!-- ========================================== -->
+  <section id="prayers" class="py-12 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block mb-1">
+            <i class="fa-solid fa-mosque"></i> ইসলামিক সময়সূচি
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            ইতালিতে আজকের নামাজের সময়সূচি
+          </h2>
+        </div>
+
+        <!-- City Switcher -->
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-bold text-slate-500">শহর:</label>
+          <select id="prayer-city-select" onchange="changePrayerCity()" class="text-xs font-bold bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5">
+            <option value="rome">রোম (Roma)</option>
+            <option value="milan">মিলান (Milano)</option>
+            <option value="venice">ভেনিস (Venezia)</option>
+            <option value="bologna">বোলোগনা (Bologna)</option>
+            <option value="naples">নাপোলি (Napoli)</option>
+            <option value="turin">তুরিন (Torino)</option>
+            <option value="brescia">ব্রেশিয়া (Brescia)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 5 Prayers Cards Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5" id="prayer-cards-container">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 6. LOCAL DIRECTORY & HELPLINE SECTION      -->
+  <!-- ========================================== -->
+  <section id="directory" class="py-12 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block mb-1">
+          <i class="fa-solid fa-address-book"></i> প্রবাসীদের ডিরেক্টরি
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+          ইতালির প্রধান CAF অফিস ও দরকারি হেল্পলাইন
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          রোম, মিলান ও ভেনিসের নির্ভরযোগ্য অফিস ও যোগাযোগের ঠিকানা।
+        </p>
+      </div>
+
+      <!-- Directory Cards Grid -->
+      <div id="directory-cards-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Rendered via JS (Live Admin Managed) -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 7. AUTOMATED ITALY-BANGLA NEWS & YOUTUBE   -->
+  <!-- ========================================== -->
+  <section id="news" class="py-12 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <span class="text-xs font-bold text-red-600 dark:text-red-400 uppercase tracking-wider block mb-1">
+            <i class="fa-solid fa-satellite-dish"></i> লাইভ আপডেট
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+            ইতালি প্রবাসী সংবাদ ও লাইভ ভিডিও
+          </h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Embedded Responsive YouTube Player -->
+        <div class="lg:col-span-1 rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-md flex flex-col">
+          <div class="p-3 bg-red-950/80 border-b border-red-900/60 text-white flex items-center justify-between">
+            <span class="text-xs font-bold flex items-center gap-1.5">
+              <i class="fa-brands fa-youtube text-red-500"></i> <span id="yt-title-text">ইউটিউব বিশেষ সংবাদ</span>
+            </span>
+            <span class="text-3xs bg-red-600 px-2 py-0.5 rounded text-white font-bold animate-pulse">LIVE</span>
+          </div>
+          <div class="relative w-full aspect-video bg-black">
+            <iframe
+              id="yt-iframe-player"
+              src="https://www.youtube.com/embed/7_Y8fK9bXzY"
+              title="YouTube Video"
+              class="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+          <div class="p-3 text-2xs text-slate-400">
+            * অ্যাডমিন প্যানেল থেকে যেকোনো ইউটিউব লাইভ লিঙ্ক আপডেট করা সম্ভব।
+          </div>
+        </div>
+
+        <!-- News Feed Cards -->
+        <div class="lg:col-span-2 space-y-3" id="news-feed-container">
+          <!-- News Cards Injected via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 8. EMERGENCY CONTACT CARDS (ONE-TOUCH DIAL)-->
+  <!-- ========================================== -->
+  <section id="emergency" class="py-12 bg-red-950 text-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block mb-1">
+          জরুরি হেল্পলাইন
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold">
+          ইতালিতে ওয়ান-টাচ জরুরি ডায়ালিং নম্বর
+        </h2>
+        <p class="text-xs text-red-200 mt-1">যেকোনো বিপদ বা স্বাস্থ্য সমস্যায় সঙ্গে সঙ্গে ডায়াল করুন (টোল ফ্রি)</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a href="tel:112" class="p-4 rounded-xl bg-red-900/80 hover:bg-red-800 border border-red-700/60 flex items-center gap-3 transition-transform active:scale-95">
+          <div class="w-12 h-12 rounded-xl bg-white text-red-600 font-extrabold text-xl flex items-center justify-center">112</div>
+          <div>
+            <span class="font-bold text-sm block">সার্বজনীন জরুরি ও পুলিশ</span>
+            <span class="text-xs text-red-200 font-latin">Carabinieri & Polizia</span>
+          </div>
+        </a>
+
+        <a href="tel:118" class="p-4 rounded-xl bg-red-900/80 hover:bg-red-800 border border-red-700/60 flex items-center gap-3 transition-transform active:scale-95">
+          <div class="w-12 h-12 rounded-xl bg-white text-red-600 font-extrabold text-xl flex items-center justify-center">118</div>
+          <div>
+            <span class="font-bold text-sm block">অ্যাম্বুলেন্স ও স্বাস্থ্য</span>
+            <span class="text-xs text-red-200 font-latin">Emergenza Sanitaria</span>
+          </div>
+        </a>
+
+        <a href="tel:115" class="p-4 rounded-xl bg-red-900/80 hover:bg-red-800 border border-red-700/60 flex items-center gap-3 transition-transform active:scale-95">
+          <div class="w-12 h-12 rounded-xl bg-white text-red-600 font-extrabold text-xl flex items-center justify-center">115</div>
+          <div>
+            <span class="font-bold text-sm block">ফায়ার সার্ভিস ও আগুন</span>
+            <span class="text-xs text-red-200 font-latin">Vigili del Fuoco</span>
+          </div>
+        </a>
+
+        <a href="tel:1522" class="p-4 rounded-xl bg-red-900/80 hover:bg-red-800 border border-red-700/60 flex items-center gap-3 transition-transform active:scale-95">
+          <div class="w-12 h-12 rounded-xl bg-white text-red-600 font-extrabold text-xl flex items-center justify-center">1522</div>
+          <div>
+            <span class="font-bold text-sm block">নারী সুরক্ষা ও সহায়তা</span>
+            <span class="text-xs text-red-200 font-latin">Antiviolenza Donna</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- FOOTER WITH HIDDEN ADMIN BUTTON            -->
+  <!-- ========================================== -->
+  <footer class="bg-emerald-950 text-emerald-200 border-t border-emerald-900 py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-emerald-900 text-xs">
+        <div>
+          <span class="text-base font-extrabold text-white">ইতালিপ্রবাসী<span class="text-amber-400">.কম</span></span>
+          <p class="text-emerald-400/80 mt-1 max-w-md">
+            ইতালিতে বসবাসরত বাংলাদেশি কমিউনিটির জন্য আধুনিক তথ্য ও সেবামূলক প্ল্যাটফর্ম।
+          </p>
+        </div>
+
+        <div class="flex items-center gap-4 text-xs font-semibold">
+          <a href="#currency" class="hover:text-amber-300">ইউরো রেট</a>
+          <a href="#phrases" class="hover:text-amber-300">ইতালিয়ান ভাষা</a>
+          <a href="#prayers" class="hover:text-amber-300">নামাজের সময়</a>
+          <a href="#directory" class="hover:text-amber-300">CAF ডিরেক্টরি</a>
+        </div>
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-3xs text-emerald-400/60">
+        <span>কপিরাইট © ২০২৬ ইতালিপ্রবাসী ডটকম · সর্বস্বত্ব সংরক্ষিত</span>
+
+        <!-- Hidden/Discreet Admin Link (#admin) -->
+        <button onclick="openAdminModal()" class="flex items-center gap-1.5 text-emerald-400/70 hover:text-amber-300 transition-colors py-1 px-2 rounded bg-emerald-900/60 hover:bg-emerald-900">
+          <i class="fa-solid fa-lock"></i>
+          <span>অ্যাডমিন প্যানেল কন্ট্রোল (#admin)</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- 9. STRATEGIC AD SLOT: DESKTOP FLOATING 300x250 -->
+  <!-- ========================================== -->
+  <div id="ad-floating-sidebar" class="hidden lg:block fixed bottom-6 right-6 z-40">
+    <!-- Injected via JS -->
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 10. STRATEGIC AD SLOT: MOBILE BOTTOM STICKY 320x50 -->
+  <!-- ========================================== -->
+  <div id="ad-mobile-bottom" class="block lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 border-t border-amber-500/40 px-3 py-1.5 shadow-2xl">
+    <!-- Injected via JS -->
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 11. FULLY FUNCTIONAL ADMIN MODAL           -->
+  <!-- ========================================== -->
+  <div id="admin-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md hidden">
+    <div class="w-full max-w-4xl max-h-[92vh] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-emerald-500/30 overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white flex items-center justify-between border-b border-emerald-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base sm:text-lg">ইতালিপ্রবাসী অ্যাডমিন ড্যাশবোর্ড</h3>
+            <p class="text-3xs text-emerald-200">Adsterra Ad Placements, Live Rate & Content Manager</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="admin-logout-btn" onclick="adminLogout()" class="hidden text-xs text-slate-300 hover:text-white px-2.5 py-1 rounded bg-slate-800 transition-colors">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> লগআউট
+          </button>
+          <button onclick="closeAdminModal()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Login View -->
+      <div id="admin-login-view" class="p-8 sm:p-12 flex flex-col items-center justify-center text-center my-auto">
+        <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4 border border-amber-300 text-2xl">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h4 class="text-xl font-bold text-slate-900 dark:text-white mb-2">সুরক্ষিত অ্যাডমিন লগইন</h4>
+        <p class="text-xs text-slate-500 mb-6">
+          ডিফল্ট ক্রেডেনশিয়াল: ইউজার: <strong class="text-emerald-600">admin</strong> | পাসওয়ার্ড: <strong class="text-emerald-600">1234</strong>
+        </p>
+
+        <form onsubmit="handleAdminLogin(event)" class="w-full max-w-xs space-y-3">
+          <input type="text" id="admin-input-user" value="admin" placeholder="ইউজারনেম" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+          <input type="password" id="admin-input-pass" placeholder="পাসওয়ার্ড" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
+          <p id="admin-login-err" class="text-xs text-red-500 font-bold hidden"></p>
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow-md transition-colors">
+            লগইন করুন
+          </button>
+        </form>
+      </div>
+
+      <!-- Authenticated Control View -->
+      <div id="admin-panel-view" class="hidden flex-1 flex flex-col overflow-hidden">
+        <!-- Tabs -->
+        <div class="flex items-center gap-1 px-4 sm:px-6 pt-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 overflow-x-auto text-xs font-semibold">
+          <button onclick="switchAdminTab('ads')" id="tab-btn-ads" class="px-3.5 py-2.5 rounded-t-xl bg-white dark:bg-slate-900 text-emerald-600 border-t-2 border-emerald-600 font-bold">
+            <i class="fa-solid fa-rectangle-ad mr-1"></i> বিজ্ঞাপন ও Adsterra
+          </button>
+          <button onclick="switchAdminTab('rates')" id="tab-btn-rates" class="px-3.5 py-2.5 rounded-t-xl text-slate-500 hover:text-slate-900">
+            <i class="fa-solid fa-coins mr-1"></i> লাইভ ইউরো রেট
+          </button>
+          <button onclick="switchAdminTab('notices')" id="tab-btn-notices" class="px-3.5 py-2.5 rounded-t-xl text-slate-500 hover:text-slate-900">
+            <i class="fa-solid fa-bullhorn mr-1"></i> জরুরি নোটিস
+          </button>
+          <button onclick="switchAdminTab('directory')" id="tab-btn-directory" class="px-3.5 py-2.5 rounded-t-xl text-slate-500 hover:text-slate-900">
+            <i class="fa-solid fa-building mr-1"></i> ডিরেক্টরি ও CAF
+          </button>
+          <button onclick="switchAdminTab('youtube')" id="tab-btn-youtube" class="px-3.5 py-2.5 rounded-t-xl text-slate-500 hover:text-slate-900">
+            <i class="fa-brands fa-youtube mr-1"></i> ইউটিউব ভিডিও
+          </button>
+        </div>
+
+        <!-- Tab Contents Area -->
+        <div class="flex-1 p-5 sm:p-6 overflow-y-auto space-y-6">
+          <!-- TAB 1: ADS -->
+          <div id="panel-tab-ads" class="space-y-5">
+            <!-- Global Switch -->
+            <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-sm text-amber-900 dark:text-amber-300">গ্লোবাল বিজ্ঞাপন টগল (Master Toggle)</h4>
+                <p class="text-xs text-amber-800/80">ওয়েবসাইটের সব ধরনের বিজ্ঞাপন এক ক্লিকে চালু বা বন্ধ করুন</p>
+              </div>
+              <input type="checkbox" id="cfg-all-ads" class="w-5 h-5 accent-emerald-600">
+            </div>
+
+            <!-- Top Banner -->
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-xs uppercase text-slate-800 dark:text-slate-200">১. হেডার টপ ব্যানার (728x90)</span>
+                <input type="checkbox" id="cfg-top-banner-enable" class="accent-emerald-600">
+              </div>
+              <textarea id="cfg-top-banner-script" rows="2" placeholder="Adsterra 728x90 JS/HTML Code..." class="w-full font-mono text-xs p-2 rounded border bg-slate-50 dark:bg-slate-800"></textarea>
+            </div>
+
+            <!-- In-Feed Native Card -->
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-xs uppercase text-slate-800 dark:text-slate-200">২. ইন-ফিড নেটিভ কার্ড (Native Feed)</span>
+                <input type="checkbox" id="cfg-native-enable" class="accent-emerald-600">
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <input type="text" id="cfg-native-title" placeholder="কাস্টম হেডলাইন" class="p-2 rounded border bg-slate-50 dark:bg-slate-800">
+                <input type="text" id="cfg-native-subtitle" placeholder="সাবটাইটেল" class="p-2 rounded border bg-slate-50 dark:bg-slate-800">
+                <input type="text" id="cfg-native-image" placeholder="ছবি URL" class="p-2 rounded border bg-slate-50 dark:bg-slate-800">
+                <input type="text" id="cfg-native-url" placeholder="টার্গেট লিঙ্ক URL" class="p-2 rounded border bg-slate-50 dark:bg-slate-800">
+              </div>
+            </div>
+
+            <!-- Floating Sidebar Sticky 300x250 -->
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-xs uppercase text-slate-800 dark:text-slate-200">৩. ফ্লোটিং স্টিকি ব্যানার (300x250 Desktop)</span>
+                <input type="checkbox" id="cfg-sidebar-enable" class="accent-emerald-600">
+              </div>
+              <input type="text" id="cfg-sidebar-title" placeholder="ব্যানার টাইটেল" class="w-full p-2 text-xs rounded border bg-slate-50 dark:bg-slate-800">
+              <input type="text" id="cfg-sidebar-image" placeholder="ছবি URL" class="w-full p-2 text-xs rounded border bg-slate-50 dark:bg-slate-800">
+            </div>
+
+            <!-- Direct Link Slot -->
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-xs uppercase text-slate-800 dark:text-slate-200">৪. ডিরেক্ট লিঙ্ক / পপআন্ডার স্লট</span>
+                <input type="checkbox" id="cfg-directlink-enable" class="accent-emerald-600">
+              </div>
+              <input type="url" id="cfg-directlink-url" placeholder="https://adsterra-direct-link.com" class="w-full p-2 text-xs rounded border font-mono bg-slate-50 dark:bg-slate-800">
+            </div>
+          </div>
+
+          <!-- TAB 2: RATES -->
+          <div id="panel-tab-rates" class="hidden space-y-4">
+            <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300">
+              <h4 class="font-bold text-sm text-emerald-900 dark:text-emerald-300">লাইভ এক্সচেঞ্জ রেট কন্ট্রোলার</h4>
+              <p class="text-xs text-emerald-800">এখানে রেট পরিবর্তন করলে পুরো হোমপেজের হিসাব পরিবর্তন হবে।</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-bold">
+              <div>
+                <label class="block mb-1">১ ইউরো = কত টাকা (EUR to BDT):</label>
+                <input type="number" step="0.05" id="cfg-rate-eur" class="w-full p-2.5 rounded border text-base font-latin">
+              </div>
+              <div>
+                <label class="block mb-1">ব্যাংক প্রণোদনা বোনাস (%):</label>
+                <input type="number" step="0.1" id="cfg-rate-bonus" class="w-full p-2.5 rounded border text-base font-latin">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold mb-1">রেট নোট বা সোর্স:</label>
+              <input type="text" id="cfg-rate-note" class="w-full p-2 rounded border text-xs">
+            </div>
+          </div>
+
+          <!-- TAB 3: NOTICES -->
+          <div id="panel-tab-notices" class="hidden space-y-4">
+            <div>
+              <label class="block text-xs font-bold mb-1">রানিং টিকার নোটিস টেক্সট:</label>
+              <textarea id="cfg-notice-text" rows="3" class="w-full p-2.5 rounded border text-xs"></textarea>
+            </div>
+          </div>
+
+          <!-- TAB 4: DIRECTORY -->
+          <div id="panel-tab-directory" class="hidden space-y-4">
+            <p class="text-xs text-slate-500">হোমপেজের ডিরেক্টরি কার্ডে CAF অফিস ও বাংলাদেশ দূতাবাস হেল্পডেস্ক তালিকা প্রদর্শিত হয়।</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <input type="text" id="cfg-dir-name" placeholder="অফিসের নাম" class="p-2 rounded border">
+              <input type="text" id="cfg-dir-phone" placeholder="ফোন নম্বর" class="p-2 rounded border">
+              <input type="text" id="cfg-dir-city" placeholder="শহর (Roma/Milano)" class="p-2 rounded border">
+              <input type="text" id="cfg-dir-address" placeholder="ঠিকানা" class="p-2 rounded border">
+            </div>
+          </div>
+
+          <!-- TAB 5: YOUTUBE -->
+          <div id="panel-tab-youtube" class="hidden space-y-4">
+            <div>
+              <label class="block text-xs font-bold mb-1">ইউটিউব ভিডিও বা এমবেড URL:</label>
+              <input type="text" id="cfg-yt-url" placeholder="https://www.youtube.com/embed/..." class="w-full p-2.5 rounded border text-xs font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-bold mb-1">ভিডিও শিরোনাম:</label>
+              <input type="text" id="cfg-yt-title" class="w-full p-2.5 rounded border text-xs">
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Action Buttons -->
+        <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <button onclick="factoryResetAdmin()" class="text-xs text-red-600 hover:underline">
+            <i class="fa-solid fa-rotate-left"></i> ফ্যাক্টরি রিসেট
+          </button>
+          <button onclick="saveAdminSettings()" class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-md">
+            <i class="fa-solid fa-floppy-disk mr-1"></i> সেটিংস সেভ করুন
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT: LOGIC, ADS, AUDIO, STATE       -->
+  <!-- ========================================== -->
+  <script>
+    // --- 1. LOCAL STORAGE & ADMIN STATE CONFIG ---
+    const CONFIG_KEY = 'italy_probashi_spa_v1';
+
+    const DEFAULT_CONFIG = {
+      adminUser: 'admin',
+      adminPass: '1234',
+      allAds: true,
+      topBanner: {
+        enabled: true,
+        script: `<div class="p-3 text-center text-xs text-amber-900 bg-amber-100 rounded-lg border border-amber-300 font-bold">
+          📢 Adsterra Header Banner Active (728x90 / 320x50)
+        </div>`
+      },
+      nativeAd: {
+        enabled: true,
+        title: 'ইতালিতে বিশ্বস্ত আইনজীবীর ফ্রি লিগ্যাল কনসাল্টেশন',
+        subtitle: 'পারমেসো নবায়ন, ফ্যামিলি রিইউনিয়ন ও ভিসা সংক্রান্ত যেকোনো জটিলতায় বিশেষজ্ঞ সহায়তা',
+        image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=500&q=80',
+        url: '#directory'
+      },
+      sidebarAd: {
+        enabled: true,
+        title: 'বিকাশ ও ব্যাংক অ্যাকাউন্টে তাৎক্ষণিক টাকা পাঠান',
+        image: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=400&q=80'
+      },
+      directLink: {
+        enabled: false,
+        url: 'https://example.com/direct-link-promo'
+      },
+      rate: {
+        eurToBdt: 133.25,
+        bonusPercent: 2.5,
+        sourceText: 'ব্যাংক অফ ইতালি ও বাংলাদেশ ব্যাংক রেট + ২.৫% সরকারি প্রণোদনা'
+      },
+      notice: 'জরুরি নোটিস: রোম ও মিলান বাংলাদেশ দূতাবাসের বিশেষ কনস্যুলার সেবা চলছে · অবৈধ দালাল এড়িয়ে সরাসরি অনুমোদিত CAF অফিসে যোগাযোগ করুন।',
+      youtube: {
+        url: 'https://www.youtube.com/embed/7_Y8fK9bXzY',
+        title: 'ইতালি প্রবাসী বাংলাদেশিদের বিশেষ সংবাদ বুলেটিন'
+      }
+    };
+
+    function loadConfig() {
+      try {
+        const saved = localStorage.getItem(CONFIG_KEY);
+        return saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
+      } catch {
+        return DEFAULT_CONFIG;
+      }
+    }
+
+    let siteConfig = loadConfig();
+
+    // --- 2. MULTI-LANGUAGE SYSTEM ---
+    const TRANSLATIONS = {
+      bn: {
+        navCurrency: 'ইউরো রেট',
+        navPhrases: 'ভাষা ও বাক্য',
+        navPrayers: 'নামাজের সময়',
+        navDirectory: 'লোকাল ডিরেক্টরি',
+        navNews: 'সংবাদ ও লাইভ',
+        sosButton: 'জরুরি ১১২ / ১১৮',
+        heroBadge: 'ইতালি প্রবাসী বাংলাদেশিদের সর্বাত্মক পোর্টাল',
+        heroTitle: 'ইতালিতে আপনার নতুন জীবন, কাজ ও অধিকারের বিশ্বস্ত সঙ্গী',
+        heroSubtitle: 'পারমেসো দি সোজ্জোর্নো, স্পিড, কোদিচে ফিস্কালে, লাইভ ইউরো রেট, নিত্যদিনের ইতালিয়ান ভাষা অনুবাদক এবং আইনি সহায়তার বিশ্বস্ত ঠিকানা।',
+        heroCtaRate: 'ইউরো টু টাকা কনভার্টার',
+        heroCtaAudio: 'ইতালিয়ান ভাষা ও অডিও',
+        heroCtaPdf: 'পিডিএফ গাইড ডাউনলোড',
+        rateBadge: 'বাংলাদেশ ব্যাংক ও মানি এক্সচেঞ্জ রেট',
+        rateTitle: 'লাইভ ইউরো (EUR) টু টাকা (BDT) ক্যালকুলেটর',
+        phraseBadge: 'ভয়েস উচ্চারণ সহ ইতালিয়ান ভাষা শিক্ষা',
+        phraseTitle: 'নিত্যদিনের দরকারি ইতালিয়ান বাক্য ও কথা',
+        phraseSubtitle: 'ইতালি পৌঁছে সুপারমার্কেট, হাসপাতাল, বাস-ট্রেন ও কাজের জায়গায় সহজে কথা বলুন।'
+      },
+      en: {
+        navCurrency: 'Euro Rate',
+        navPhrases: 'Phrases',
+        navPrayers: 'Prayer Times',
+        navDirectory: 'Directory',
+        navNews: 'News & Live',
+        sosButton: 'SOS 112 / 118',
+        heroBadge: 'All-in-one Expatriate Portal in Italy',
+        heroTitle: 'Your Trusted Companion for Life, Work & Rights in Italy',
+        heroSubtitle: 'Permesso di Soggiorno, SPID, Codice Fiscale, live Euro to BDT exchange rate, and voice translator.',
+        heroCtaRate: 'Euro to BDT Calculator',
+        heroCtaAudio: 'Italian Audio Phrases',
+        heroCtaPdf: 'Download PDF Guide',
+        rateBadge: 'Official Central Bank Exchange Rates',
+        rateTitle: 'Live Euro (EUR) to Taka (BDT) Calculator',
+        phraseBadge: 'Italian Language with Voice Audio',
+        phraseTitle: 'Everyday Useful Italian Sentences & Phrases',
+        phraseSubtitle: 'Communicate smoothly at supermarkets, hospitals, transport, and job centers.'
+      },
+      it: {
+        navCurrency: 'Tasso Euro',
+        navPhrases: 'Frasi Utili',
+        navPrayers: 'Preghiera',
+        navDirectory: 'Directory',
+        navNews: 'Notizie',
+        sosButton: 'Emergenza 112',
+        heroBadge: 'Portale per la Comunità Bangladese in Italia',
+        heroTitle: 'Il tuo punto di riferimento per vita, lavoro e diritti in Italia',
+        heroSubtitle: 'Permesso di soggiorno, SPID, Codice Fiscale, cambio Euro in tempo reale e traduttore.',
+        heroCtaRate: 'Calcolatore Euro / BDT',
+        heroCtaAudio: 'Frasi in Italiano con Audio',
+        heroCtaPdf: 'Scarica Guida PDF',
+        rateBadge: 'Tassi Ufficiali Banca Centrale',
+        rateTitle: 'Calcolatore Tasso di Cambio EUR / BDT',
+        phraseBadge: 'Lingua Italiana con Pronuncia Vocale',
+        phraseTitle: 'Frasi Essenziali della Vita Quotidiana',
+        phraseSubtitle: 'Comunica facilmente al supermercato, ospedale, trasporti e lavoro.'
+      }
+    };
+
+    let currentLang = 'bn';
+
+    function setAppLanguage(lang) {
+      currentLang = lang;
+      ['bn', 'en', 'it'].forEach(l => {
+        const btn = document.getElementById(`lang-btn-${l}`);
+        if (btn) {
+          if (l === lang) {
+            btn.className = 'px-2.5 py-1 rounded-md transition-colors bg-amber-500 text-slate-950 font-bold';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-md transition-colors text-emerald-200 hover:text-white';
+          }
+        }
+      });
+
+      // Update text nodes
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
+          el.textContent = TRANSLATIONS[lang][key];
+        }
+      });
+    }
+
+    // --- 3. CURRENCY CALCULATOR LOGIC ---
+    function calculateExchange() {
+      const euroVal = parseFloat(document.getElementById('calc-euro-input').value) || 0;
+      const rate = siteConfig.rate.eurToBdt;
+      const bonusRate = siteConfig.rate.bonusPercent / 100;
+
+      const baseBdt = euroVal * rate;
+      const bonusBdt = baseBdt * bonusRate;
+      const totalBdt = baseBdt + bonusBdt;
+
+      document.getElementById('calc-standard-bdt').textContent = Math.round(baseBdt).toLocaleString('en-US') + ' ৳';
+      document.getElementById('calc-bonus-bdt').textContent = '+' + Math.round(bonusBdt).toLocaleString('en-US') + ' ৳';
+      document.getElementById('calc-total-bdt').textContent = Math.round(totalBdt).toLocaleString('en-US') + ' ৳';
+    }
+
+    function setCalcEuro(amt) {
+      document.getElementById('calc-euro-input').value = amt;
+      calculateExchange();
+    }
+
+    function updateRateDisplays() {
+      document.getElementById('display-base-rate').textContent = siteConfig.rate.eurToBdt.toFixed(2) + ' ৳';
+      document.getElementById('display-incentive-rate').textContent = '+' + siteConfig.rate.bonusPercent + '%';
+      document.getElementById('rate-source-note').textContent = siteConfig.rate.sourceText;
+      calculateExchange();
+    }
+
+    // --- 4. ITALIAN QUICK PHRASE CARDS DATA & TTS ---
+    const PHRASES_DATA = [
+      {
+        cat: 'supermarket',
+        it: 'Quanto costa questo?',
+        bn: 'এটার দাম কত?',
+        en: 'How much does this cost?',
+        phonetic: 'কুয়ান্তো কোস্তা কুয়েস্তো?'
+      },
+      {
+        cat: 'supermarket',
+        it: 'Posso pagare con la carta?',
+        bn: 'আমি কি কার্ড দিয়ে বিল দিতে পারি?',
+        en: 'Can I pay by card?',
+        phonetic: 'পসো পাগারে কন লা কার্তা?'
+      },
+      {
+        cat: 'hospital',
+        it: 'Ho bisogno di un medico urgente.',
+        bn: 'আমার জরুরি ডাক্তার প্রয়োজন।',
+        en: 'I need an urgent doctor.',
+        phonetic: 'ও বিজোনিও দি উন মেদিকো উরজেন্তে।'
+      },
+      {
+        cat: 'hospital',
+        it: 'Dove si trova il pronto soccorso?',
+        bn: 'জরুরি চিকিৎসা কেন্দ্র (ইমার্জেন্সি) কোথায়?',
+        en: 'Where is the emergency room?',
+        phonetic: 'দভে সি ত্রোভা ইল প্রোন্তো সোক্কোরসো?'
+      },
+      {
+        cat: 'transport',
+        it: 'Un biglietto per Roma Termini, per favore.',
+        bn: 'দয়া করে রোম তেরমিনির একটি টিকিট দিন।',
+        en: 'One ticket to Roma Termini, please.',
+        phonetic: 'উন বিলিয়েত্তো পের রোমা তেরমিনি, পের ফাভোরে।'
+      },
+      {
+        cat: 'work',
+        it: 'Sto cercando lavoro, avete posto?',
+        bn: 'আমি কাজের খোঁজে আছি, আপনাদের কোনো ভ্যাকেন্সি আছে?',
+        en: 'I am looking for a job, do you have a vacancy?',
+        phonetic: 'স্তো চেরকান্দো লাভোরো, আভেতে পোস্তো?'
+      }
+    ];
+
+    function renderPhrases(filter = 'all') {
+      const container = document.getElementById('phrase-cards-grid');
+      container.innerHTML = '';
+
+      const list = filter === 'all' ? PHRASES_DATA : PHRASES_DATA.filter(p => p.cat === filter);
+
+      list.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-emerald-500 transition-all flex flex-col justify-between';
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-3xs uppercase font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
+                ${p.cat}
+              </span>
+              <button onclick="copyPhraseText('${p.it.replace(/'/g, "\\'")}', this)" class="text-slate-400 hover:text-emerald-600 text-xs" title="কপি করুন">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+            <h4 class="text-base font-bold text-slate-900 dark:text-white font-latin">${p.it}</h4>
+            <p class="text-xs text-emerald-700 dark:text-emerald-400 font-semibold mt-1">উচ্চারণ: ${p.phonetic}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5">বাংলা: ${p.bn}</p>
+            <p class="text-3xs text-slate-400 font-latin mt-0.5">EN: ${p.en}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+            <button onclick="playItalianSpeech('${p.it.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-1.5 transition-colors">
+              <i class="fa-solid fa-volume-high"></i>
+              <span>শুনুন</span>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterPhrases(cat) {
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = 'cat-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-700 text-white shadow-xs';
+        } else {
+          btn.className = 'cat-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
+        }
+      });
+      renderPhrases(cat);
+    }
+
+    function playItalianSpeech(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'it-IT';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function copyPhraseText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i>';
+        setTimeout(() => btn.innerHTML = original, 2000);
+      });
+    }
+
+    // --- 5. ISLAMIC PRAYER TIMES DATA ---
+    const PRAYER_CITIES = {
+      rome: { name: 'রোম', fajr: '05:28', dhuhr: '13:01', asr: '16:24', maghrib: '19:01', isha: '20:28' },
+      milan: { name: 'মিলান', fajr: '05:32', dhuhr: '13:08', asr: '16:32', maghrib: '19:08', isha: '20:36' },
+      venice: { name: 'ভেনিস', fajr: '05:24', dhuhr: '13:00', asr: '16:22', maghrib: '19:00', isha: '20:26' },
+      bologna: { name: 'বোলোগনা', fajr: '05:27', dhuhr: '13:03', asr: '16:26', maghrib: '19:03', isha: '20:30' },
+      naples: { name: 'নাপোলি', fajr: '05:23', dhuhr: '12:56', asr: '16:20', maghrib: '18:56', isha: '20:22' },
+      turin: { name: 'তুরিন', fajr: '05:38', dhuhr: '13:14', asr: '16:38', maghrib: '19:14', isha: '20:42' },
+      brescia: { name: 'ব্রেশিয়া', fajr: '05:30', dhuhr: '13:06', asr: '16:29', maghrib: '19:06', isha: '20:33' },
+    };
+
+    function renderPrayerTimes(cityKey = 'rome') {
+      const city = PRAYER_CITIES[cityKey] || PRAYER_CITIES.rome;
+      const prayers = [
+        { name: 'ফজর (Fajr)', time: city.fajr, icon: 'fa-sun', desc: 'ভোর' },
+        { name: 'যোহর (Dhuhr)', time: city.dhuhr, icon: 'fa-sun', desc: 'দুপুর' },
+        { name: 'আসর (Asr)', time: city.asr, icon: 'fa-sun-plant-wilt', desc: 'বিকাল' },
+        { name: 'মাগরিব (Maghrib)', time: city.maghrib, icon: 'fa-cloud-sun', desc: 'ইফতার' },
+        { name: 'ইশা (Isha)', time: city.isha, icon: 'fa-moon', desc: 'রাত' },
+      ];
+
+      const container = document.getElementById('prayer-cards-container');
+      container.innerHTML = '';
+
+      prayers.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-center';
+        card.innerHTML = `
+          <div class="text-amber-500 mb-1"><i class="fa-solid ${p.icon}"></i></div>
+          <span class="text-2xs text-slate-400 font-bold block uppercase">${p.desc}</span>
+          <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">${p.name}</h4>
+          <div class="text-xl font-extrabold font-latin text-emerald-600 dark:text-emerald-400 mt-2">${p.time}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function changePrayerCity() {
+      const select = document.getElementById('prayer-city-select');
+      renderPrayerTimes(select.value);
+    }
+
+    // --- 6. LOCAL DIRECTORY (CAF & SERVICES) ---
+    const DIRECTORY_ITEMS = [
+      { name: 'CAF Italia Bangla (রোম)', city: 'Roma', phone: '+39 06 1234567', addr: 'Via di Tor Pignattara, 142' },
+      { name: 'মিলান বাংলা বাজার ও হালাল গ্রোসারি', city: 'Milano', phone: '+39 02 7654321', addr: 'Via Padova, 88' },
+      { name: 'বাংলাদেশ দূতাবাস হেল্পডেস্ক (রোম)', city: 'Roma', phone: '+39 06 8086274', addr: 'Via Antonio Bertoloni, 14' },
+    ];
+
+    function renderDirectory() {
+      const container = document.getElementById('directory-cards-container');
+      container.innerHTML = '';
+      DIRECTORY_ITEMS.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-emerald-500 transition-all';
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-3xs uppercase font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">${d.city}</span>
+            <i class="fa-solid fa-building text-slate-400"></i>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 dark:text-white">${d.name}</h4>
+          <p class="text-xs text-slate-500 mt-1">${d.addr}</p>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <a href="tel:${d.phone}" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1">
+              <i class="fa-solid fa-phone"></i> ${d.phone}
+            </a>
+            <span class="text-3xs text-slate-400">যাচাইকৃত</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- 7. AUTOMATED ITALY-BANGLA NEWS FEED ---
+    const CURATED_NEWS = [
+      {
+        title: 'ইতালিতে প্রবাসীদের ভিসা রিনিউ ও কর্মসংস্থান সহায়তায় নতুন নির্দেশিকা প্রকাশ',
+        source: 'প্রথম আলো প্রবাসী ডেস্ক',
+        time: 'আজকের আপডেট',
+        snippet: 'রোম ও মিলানের প্রবাসী বাংলাদেশিদের নিয়মিত কাজের অনুমতি নবায়নে জরুরি দিকনির্দেশনা দেওয়া হয়েছে।'
+      },
+      {
+        title: 'রোম দূতাবাসে ই-পাসপোর্ট দ্রুত ডেলিভারি দিতে বিশেষ ক্যাম্পেইন শুরু',
+        source: 'ইতালি বার্তা',
+        time: '২ ঘণ্টা আগে',
+        snippet: 'ভেনিস, বলোনিয়া ও নাপোলির প্রবাসীদের জন্য ভ্রাম্যমাণ টিম গঠন করেছে দূতাবাস।'
+      }
+    ];
+
+    function renderNews() {
+      const container = document.getElementById('news-feed-container');
+      container.innerHTML = '';
+      CURATED_NEWS.forEach(n => {
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 shadow-2xs';
+        card.innerHTML = `
+          <div class="flex items-center justify-between text-2xs text-slate-400 mb-1">
+            <span class="font-bold text-emerald-600 dark:text-emerald-400">${n.source}</span>
+            <span>${n.time}</span>
+          </div>
+          <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-snug">${n.title}</h4>
+          <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">${n.snippet}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- 8. AD RENDERER SYSTEM (ADSTERRA & CUSTOM) ---
+    function renderAdSlots() {
+      const isEnabled = siteConfig.allAds;
+
+      // 1. Top Banner
+      const topContainer = document.getElementById('ad-top-banner');
+      if (isEnabled && siteConfig.topBanner.enabled) {
+        topContainer.innerHTML = `
+          <div class="relative rounded-xl overflow-hidden border border-amber-300/80 bg-gradient-to-r from-amber-50 via-emerald-50 to-amber-50 dark:from-slate-900 dark:via-emerald-950/40 dark:to-slate-900 p-2 sm:p-3 shadow-2xs">
+            <div class="text-right text-3xs text-slate-400 uppercase font-mono">ADVERTISEMENT</div>
+            ${siteConfig.topBanner.script}
+          </div>
+        `;
+        topContainer.classList.remove('hidden');
+      } else {
+        topContainer.innerHTML = '';
+        topContainer.classList.add('hidden');
+      }
+
+      // 2. Native In-Feed Card
+      const nativeContainer = document.getElementById('ad-native-infeed');
+      if (isEnabled && siteConfig.nativeAd.enabled) {
+        nativeContainer.innerHTML = `
+          <div class="rounded-2xl border border-amber-300 dark:border-amber-800 bg-gradient-to-br from-amber-50/70 via-white to-emerald-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/30 p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <img src="${siteConfig.nativeAd.image}" alt="Sponsor" class="w-16 h-16 rounded-xl object-cover border border-amber-300 shrink-0">
+              <div>
+                <span class="text-2xs font-bold text-amber-600 uppercase tracking-wide">স্পনসরড অফার / SPONSORED</span>
+                <h4 class="text-base font-bold text-slate-900 dark:text-white">${siteConfig.nativeAd.title}</h4>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">${siteConfig.nativeAd.subtitle}</p>
+              </div>
+            </div>
+            <a href="${siteConfig.nativeAd.url}" class="shrink-0 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-md transition-all">
+              বিস্তারিত জানুন →
+            </a>
+          </div>
+        `;
+        nativeContainer.classList.remove('hidden');
+      } else {
+        nativeContainer.innerHTML = '';
+        nativeContainer.classList.add('hidden');
+      }
+
+      // 3. Floating Sidebar 300x250
+      const sidebarContainer = document.getElementById('ad-floating-sidebar');
+      if (isEnabled && siteConfig.sidebarAd.enabled) {
+        sidebarContainer.innerHTML = `
+          <div class="relative w-[300px] rounded-2xl overflow-hidden border border-amber-300 dark:border-amber-800 bg-white dark:bg-slate-900 shadow-2xl p-3">
+            <button onclick="dismissSidebarAd()" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-800 text-white text-xs flex items-center justify-center">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <span class="text-3xs font-bold text-amber-500 uppercase block mb-1">স্পনসরড ব্যানার</span>
+            <img src="${siteConfig.sidebarAd.image}" class="w-full h-28 object-cover rounded-lg mb-2">
+            <h5 class="text-xs font-bold text-slate-900 dark:text-white">${siteConfig.sidebarAd.title}</h5>
+            <button onclick="triggerDirectLinkPromo()" class="w-full mt-2 py-1.5 rounded-lg bg-emerald-700 text-white text-xs font-bold">
+              এখনই দেখুন
+            </button>
+          </div>
+        `;
+        sidebarContainer.classList.remove('hidden');
+      } else {
+        sidebarContainer.innerHTML = '';
+        sidebarContainer.classList.add('hidden');
+      }
+
+      // 4. Mobile Bottom Sticky
+      const mobileContainer = document.getElementById('ad-mobile-bottom');
+      if (isEnabled) {
+        mobileContainer.innerHTML = `
+          <div class="max-w-md mx-auto flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span class="text-xs font-bold text-white truncate">প্রবাসী স্পেশাল: সর্বোচ্চ রেটে টাকা পাঠান</span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="triggerDirectLinkPromo()" class="px-2.5 py-1 rounded bg-amber-500 text-slate-950 text-2xs font-extrabold">রেট দেখুন</button>
+              <button onclick="dismissMobileAd()" class="text-slate-400 hover:text-white p-1 text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+        `;
+        mobileContainer.classList.remove('hidden');
+      } else {
+        mobileContainer.innerHTML = '';
+        mobileContainer.classList.add('hidden');
+      }
+    }
+
+    function dismissSidebarAd() {
+      document.getElementById('ad-floating-sidebar').classList.add('hidden');
+    }
+
+    function dismissMobileAd() {
+      document.getElementById('ad-mobile-bottom').classList.add('hidden');
+    }
+
+    function triggerDirectLinkPromo() {
+      if (siteConfig.allAds && siteConfig.directLink.enabled && siteConfig.directLink.url) {
+        window.open(siteConfig.directLink.url, '_blank');
+      } else {
+        document.getElementById('currency').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function dismissTicker() {
+      document.getElementById('notice-ticker-container').classList.add('hidden');
+    }
+
+    // --- 9. ADMIN PANEL LOGIC & HASH ROUTER ---
+    let isAdminLoggedIn = false;
+
+    function openAdminModal() {
+      document.getElementById('admin-modal').classList.remove('hidden');
+      if (isAdminLoggedIn) {
+        showAdminPanel();
+      } else {
+        document.getElementById('admin-login-view').classList.remove('hidden');
+        document.getElementById('admin-panel-view').classList.add('hidden');
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.add('hidden');
+      if (window.location.hash === '#admin') {
+        history.pushState('', document.title, window.location.pathname + window.location.search);
+      }
+    }
+
+    // Check URL Hash #admin on load
+    window.addEventListener('load', () => {
+      if (window.location.hash === '#admin') {
+        openAdminModal();
+      }
+    });
+
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#admin') {
+        openAdminModal();
+      }
+    });
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('admin-input-user').value.trim();
+      const p = document.getElementById('admin-input-pass').value.trim();
+      const errEl = document.getElementById('admin-login-err');
+
+      if (u === siteConfig.adminUser && p === siteConfig.adminPass) {
+        isAdminLoggedIn = true;
+        errEl.classList.add('hidden');
+        showAdminPanel();
+      } else {
+        errEl.textContent = 'ভুল ইউজারনেম বা পাসওয়ার্ড!';
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    function adminLogout() {
+      isAdminLoggedIn = false;
+      document.getElementById('admin-login-view').classList.remove('hidden');
+      document.getElementById('admin-panel-view').classList.add('hidden');
+      document.getElementById('admin-logout-btn').classList.add('hidden');
+    }
+
+    function showAdminPanel() {
+      document.getElementById('admin-login-view').classList.add('hidden');
+      document.getElementById('admin-panel-view').classList.remove('hidden');
+      document.getElementById('admin-logout-btn').classList.remove('hidden');
+
+      // Populate Inputs from Config
+      document.getElementById('cfg-all-ads').checked = siteConfig.allAds;
+      document.getElementById('cfg-top-banner-enable').checked = siteConfig.topBanner.enabled;
+      document.getElementById('cfg-top-banner-script').value = siteConfig.topBanner.script;
+
+      document.getElementById('cfg-native-enable').checked = siteConfig.nativeAd.enabled;
+      document.getElementById('cfg-native-title').value = siteConfig.nativeAd.title;
+      document.getElementById('cfg-native-subtitle').value = siteConfig.nativeAd.subtitle;
+      document.getElementById('cfg-native-image').value = siteConfig.nativeAd.image;
+      document.getElementById('cfg-native-url').value = siteConfig.nativeAd.url;
+
+      document.getElementById('cfg-sidebar-enable').checked = siteConfig.sidebarAd.enabled;
+      document.getElementById('cfg-sidebar-title').value = siteConfig.sidebarAd.title;
+      document.getElementById('cfg-sidebar-image').value = siteConfig.sidebarAd.image;
+
+      document.getElementById('cfg-directlink-enable').checked = siteConfig.directLink.enabled;
+      document.getElementById('cfg-directlink-url').value = siteConfig.directLink.url;
+
+      document.getElementById('cfg-rate-eur').value = siteConfig.rate.eurToBdt;
+      document.getElementById('cfg-rate-bonus').value = siteConfig.rate.bonusPercent;
+      document.getElementById('cfg-rate-note').value = siteConfig.rate.sourceText;
+
+      document.getElementById('cfg-notice-text').value = siteConfig.notice;
+
+      document.getElementById('cfg-yt-url').value = siteConfig.youtube.url;
+      document.getElementById('cfg-yt-title').value = siteConfig.youtube.title;
+    }
+
+    function switchAdminTab(tabKey) {
+      ['ads', 'rates', 'notices', 'directory', 'youtube'].forEach(t => {
+        const panel = document.getElementById(`panel-tab-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (panel && btn) {
+          if (t === tabKey) {
+            panel.classList.remove('hidden');
+            btn.className = 'px-3.5 py-2.5 rounded-t-xl bg-white dark:bg-slate-900 text-emerald-600 border-t-2 border-emerald-600 font-bold';
+          } else {
+            panel.classList.add('hidden');
+            btn.className = 'px-3.5 py-2.5 rounded-t-xl text-slate-500 hover:text-slate-900';
+          }
+        }
+      });
+    }
+
+    function saveAdminSettings() {
+      siteConfig.allAds = document.getElementById('cfg-all-ads').checked;
+
+      siteConfig.topBanner.enabled = document.getElementById('cfg-top-banner-enable').checked;
+      siteConfig.topBanner.script = document.getElementById('cfg-top-banner-script').value;
+
+      siteConfig.nativeAd.enabled = document.getElementById('cfg-native-enable').checked;
+      siteConfig.nativeAd.title = document.getElementById('cfg-native-title').value;
+      siteConfig.nativeAd.subtitle = document.getElementById('cfg-native-subtitle').value;
+      siteConfig.nativeAd.image = document.getElementById('cfg-native-image').value;
+      siteConfig.nativeAd.url = document.getElementById('cfg-native-url').value;
+
+      siteConfig.sidebarAd.enabled = document.getElementById('cfg-sidebar-enable').checked;
+      siteConfig.sidebarAd.title = document.getElementById('cfg-sidebar-title').value;
+      siteConfig.sidebarAd.image = document.getElementById('cfg-sidebar-image').value;
+
+      siteConfig.directLink.enabled = document.getElementById('cfg-directlink-enable').checked;
+      siteConfig.directLink.url = document.getElementById('cfg-directlink-url').value;
+
+      siteConfig.rate.eurToBdt = parseFloat(document.getElementById('cfg-rate-eur').value) || 133.25;
+      siteConfig.rate.bonusPercent = parseFloat(document.getElementById('cfg-rate-bonus').value) || 2.5;
+      siteConfig.rate.sourceText = document.getElementById('cfg-rate-note').value;
+
+      siteConfig.notice = document.getElementById('cfg-notice-text').value;
+
+      siteConfig.youtube.url = document.getElementById('cfg-yt-url').value;
+      siteConfig.youtube.title = document.getElementById('cfg-yt-title').value;
+
+      // Persist in localStorage
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(siteConfig));
+
+      // Refresh site components
+      updateRateDisplays();
+      renderAdSlots();
+      document.getElementById('ticker-live-text').textContent = siteConfig.notice;
+      document.getElementById('yt-iframe-player').src = siteConfig.youtube.url;
+      document.getElementById('yt-title-text').textContent = siteConfig.youtube.title;
+
+      alert('অ্যাডমিন সেটিংস সফলভাবে সেভ করা হয়েছে!');
+    }
+
+    function factoryResetAdmin() {
+      if (confirm('আপনি কি নিশ্চিত যে সকল সেটিংস ফ্যাক্টরি ডিফল্টে ফিরিয়ে নিতে চান?')) {
+        localStorage.removeItem(CONFIG_KEY);
+        siteConfig = { ...DEFAULT_CONFIG };
+        showAdminPanel();
+        updateRateDisplays();
+        renderAdSlots();
+        alert('সকল ডাটা সফলভাবে ডিফল্টে রিসেট করা হয়েছে।');
+      }
+    }
+
+    // --- 10. DARK / LIGHT THEME TOGGLE ---
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        icon.className = 'fa-solid fa-moon';
+      } else {
+        html.classList.add('dark');
+        icon.className = 'fa-solid fa-sun text-amber-400';
+      }
+    }
+
+    // --- INITIALIZE ALL ON LOAD ---
+    document.addEventListener('DOMContentLoaded', () => {
+      updateRateDisplays();
+      renderPhrases('all');
+      renderPrayerTimes('rome');
+      renderDirectory();
+      renderNews();
+      renderAdSlots();
+
+      document.getElementById('ticker-live-text').textContent = siteConfig.notice;
+      document.getElementById('yt-iframe-player').src = siteConfig.youtube.url;
+      document.getElementById('yt-title-text').textContent = siteConfig.youtube.title;
+    });
+  </script>
+</body>
+</html>

@@ -76,6 +76,11 @@ export const DICTIONARY: Translations = {
     en: 'Local Directory',
     it: 'Directory Locale',
   },
+  navPrayer: {
+    bn: 'নামাজের সময়সূচি',
+    en: 'Prayer Times',
+    it: 'Orari Preghiera',
+  },
   navNews: {
     bn: 'সংবাদ ও মিডিয়া',
     en: 'News & Media',

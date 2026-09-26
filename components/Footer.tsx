@@ -18,7 +18,10 @@ import {
   Calculator,
   Globe,
   Languages,
+  Clock,
+  Lock,
 } from 'lucide-react';
+import { useAdminConfig } from '@/lib/AdminConfigContext';
 
 interface FooterProps {
   onNavigate: (sectionId: string) => void;
@@ -26,6 +29,7 @@ interface FooterProps {
 }
 
 export default function Footer({ onNavigate, onEmergencyClick }: FooterProps) {
+  const { setIsAdminOpen } = useAdminConfig();
   const [copiedLink, setCopiedLink] = useState(false);
 
   const scrollToTop = () => {
@@ -141,6 +145,15 @@ export default function Footer({ onNavigate, onEmergencyClick }: FooterProps) {
                 >
                   <MapPin className="w-3.5 h-3.5 text-emerald-400" />
                   <span>শহরের CAF ও হালাল শপ ডিরেক্টরি</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('prayer-times')}
+                  className="hover:text-amber-300 transition-colors flex items-center gap-1.5 text-left cursor-pointer"
+                >
+                  <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>ইতালিতে আজকের ইসলামিক নামাজের সময়সূচি</span>
                 </button>
               </li>
               <li>
@@ -262,9 +275,23 @@ export default function Footer({ onNavigate, onEmergencyClick }: FooterProps) {
 
         {/* Disclaimer & Bottom Bar */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-emerald-300/70">
-          <p className="text-center md:text-left leading-relaxed max-w-2xl">
-            <strong>ডিসক্লেইমার:</strong> এই পোর্টালটি প্রবাসীদের প্রাথমিক তথ্য ও সহায়তার জন্য তৈরি একটি উন্মুক্ত কমিউনিটি মাধ্যম। চূড়ান্ত আইনি সিদ্ধান্তের জন্য সংশ্লিষ্ট সরকারি দপ্তর বা অনুমোদিত আইনজীবি/CAF কর্মকর্তার সাথে যোগাযোগ করুন।
-          </p>
+          <div className="space-y-1 text-center md:text-left">
+            <p className="leading-relaxed max-w-2xl">
+              <strong>ডিসক্লেইমার:</strong> এই পোর্টালটি প্রবাসীদের প্রাথমিক তথ্য ও সহায়তার জন্য তৈরি একটি উন্মুক্ত কমিউনিটি মাধ্যম। চূড়ান্ত আইনি সিদ্ধান্তের জন্য সংশ্লিষ্ট সরকারি দপ্তর বা অনুমোদিত আইনজীবি/CAF কর্মকর্তার সাথে যোগাযোগ করুন।
+            </p>
+            <div className="pt-1 flex items-center justify-center md:justify-start gap-4">
+              <button
+                onClick={() => setIsAdminOpen(true)}
+                className="inline-flex items-center gap-1.5 text-3xs text-emerald-400/70 hover:text-amber-300 transition-colors cursor-pointer"
+                title="অ্যাডমিন প্যানেল ওপেন করুন"
+              >
+                <Lock className="w-3 h-3" />
+                <span>অ্যাডমিন প্যানেল কন্ট্রোল (#admin)</span>
+              </button>
+              <span className="text-emerald-800">·</span>
+              <span className="text-3xs text-emerald-500/60">কপিরাইট © ২০২৬ ইতালিপ্রবাসী ডটকম</span>
+            </div>
+          </div>
 
           <button
             onClick={scrollToTop}

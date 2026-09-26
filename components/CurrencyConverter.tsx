@@ -19,6 +19,7 @@ import {
   PieChart,
   Percent,
 } from 'lucide-react';
+import { useAdminConfig } from '@/lib/AdminConfigContext';
 
 export default function CurrencyConverter() {
   const euroInputId = useId();
@@ -32,9 +33,15 @@ export default function CurrencyConverter() {
   // =========================================================================
   // 1. CURRENCY CONVERTER STATE
   // =========================================================================
+  const { config } = useAdminConfig();
   const [euroAmount, setEuroAmount] = useState<string>('500');
-  const [exchangeRate, setExchangeRate] = useState<number>(132.5);
+  const [customRate, setCustomRate] = useState<number | null>(null);
   const [customRateActive, setCustomRateActive] = useState<boolean>(false);
+
+  const exchangeRate =
+    customRateActive && customRate !== null
+      ? customRate
+      : config?.liveRate?.eurToBdt || 133.25;
 
   // Living Cost / Budget state
   const [monthlySalary, setMonthlySalary] = useState<number>(1500);
@@ -43,9 +50,10 @@ export default function CurrencyConverter() {
   const [transportCost, setTransportCost] = useState<number>(60);
   const [otherCost, setOtherCost] = useState<number>(90);
 
+  const bonusMultiplier = (config?.liveRate?.incentivePercent || 2.5) / 100;
   const parsedEuro = parseFloat(euroAmount) || 0;
   const standardBdt = parsedEuro * exchangeRate;
-  const govIncentive = standardBdt * 0.025; // 2.5% Bangladesh Govt Remittance Bonus
+  const govIncentive = standardBdt * bonusMultiplier; // Bangladesh Govt Remittance Bonus
   const totalBdtWithIncentive = standardBdt + govIncentive;
 
   const totalExpenses = rentCost + foodCost + transportCost + otherCost;
@@ -263,7 +271,7 @@ export default function CurrencyConverter() {
                         type="number"
                         step="0.1"
                         value={exchangeRate}
-                        onChange={(e) => setExchangeRate(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => setCustomRate(parseFloat(e.target.value) || 0)}
                         className="w-24 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-amber-400 dark:border-amber-700 text-sm font-bold text-slate-900 dark:text-white text-right focus:outline-none focus:ring-2 focus:ring-amber-500"
                       />
                       <span className="text-xs font-bold text-amber-800 dark:text-amber-300">৳ / €</span>
