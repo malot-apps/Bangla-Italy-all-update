@@ -1,0 +1,6 @@
+{
+  "name": "ইতালিপ্রবাসী ডটকম - Bangla-Italy Portal",
+  "description": "ইতালিতে বসবাসরত প্রবাসী বাংলাদেশিদের জন্য লিগ্যাল গাইড, পারমেসো, স্পিড ও কোদিচে ফিস্কালে, ইউরো-টাকা লাইভ কনভার্টার, ইতালিয়ান-বাংলা ভাষা শিক্ষা ও সহায়িকা পোর্টাল।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
