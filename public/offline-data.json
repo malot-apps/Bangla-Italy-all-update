@@ -1,0 +1,52 @@
+{
+  "version": "1.0.0",
+  "appName": "ইতালিপ্রবাসী ডটকম",
+  "lastUpdated": "2026-09-26",
+  "offlineNotice": "আপনি অফলাইনে আছেন। মূল জরুরি তথ্য ও অনুবাদসমূহ ক্যাশ থেকে প্রদর্শিত হচ্ছে।",
+  "emergencyHotlines": [
+    { "name": "সার্বিক জরুরি নিরাপত্তা ও পুলিশ", "number": "112", "tollFree": true },
+    { "name": "মেডিকেল ও অ্যাম্বুলেন্স", "number": "118", "tollFree": true },
+    { "name": "ফায়ার সার্ভিস ও দমকল", "number": "115", "tollFree": true },
+    { "name": "বাংলাদেশ দূতাবাস রোম", "number": "+39 06 8078516", "tollFree": false },
+    { "name": "বাংলাদেশ কনস্যুলেট মিলান", "number": "+39 02 87068410", "tollFree": false }
+  ],
+  "essentialLegalGuides": [
+    {
+      "id": "permesso-offline",
+      "title": "পারমেসো দি সোজ্জোর্নো (Permesso di Soggiorno) নবায়ন",
+      "steps": [
+        "পোস্ট অফিস থেকে হলুদ স্ট্রাইপযুক্ত 'কিট পোস্তালে' (Kit Postale) ফর্ম সংগ্রহ করুন।",
+        "মোদেল্লো ১ (Modulo 1) পূরণ করুন ও পাসপোর্ট, পুরনো পারমেসো ও কাজের চুক্তির কপি দিন।",
+        "১৬ ইউরোর মার্কা দা বল্লো (Marca da Bollo) স্ট্যাম্প ও পোস্টাল কিট জমার ফি প্রদান করুন।",
+        "পোস্ট অফিস থেকে পাওয়া হলোগ্রাফিক রসিদ (Ricevuta) সর্বদা মূল পাসপোর্টের সাথে সাথে রাখুন।"
+      ]
+    },
+    {
+      "id": "spid-offline",
+      "title": "স্পিড আইডি (SPID) তৈরি ও সরকারি সেবা",
+      "steps": [
+        "প্রয়োজনীয় কাগজপত্র: বৈধ পারমেসো বা রসিদ, কোদিচে ফিস্কালে এবং ইতালিয়ান মোবাইল নম্বর।",
+        "Poste Italiane (PosteID), Lepida বা SielteID তে অনলাইনে আবেদন করুন।",
+        "নিকটস্থ পোস্ট অফিসে গিয়ে আইডি ও বায়োমেট্রিক ভেরিফাই করে SPID অ্যাকাউন্ট চালু করুন।"
+      ]
+    },
+    {
+      "id": "codice-fiscale-offline",
+      "title": "কোদিচে ফিস্কালে (Codice Fiscale) আবেদন",
+      "steps": [
+        "Agenzia delle Entrate (কর রাজস্ব দফতর)-এ গিয়ে Modello AA4/8 ফর্ম জমা দিন।",
+        "পাসপোর্ট ও ভিসার কপি সাথে রাখুন; আবেদন দিনে দিনেই প্লাস্টিক কার্ড ছাড়া কাগজের সনদ পাওয়া যায়।"
+      ]
+    }
+  ],
+  "essentialPhrases": [
+    { "italian": "Quanto costa questo?", "phonetic": "কোয়ান্তো কোস্তা কুয়েস্তো?", "bangla": "এটার দাম কত?" },
+    { "italian": "Posso pagare con la carta?", "phonetic": "পোস্‌সো পাগারে কন লা কার্তা?", "bangla": "আমি কি কার্ড দিয়ে বিল দিতে পারি?" },
+    { "italian": "Ho bisogno urgente di un medico.", "phonetic": "ও বিজোনিয়ো উরজেন্তে দি উন মেদিকো।", "bangla": "আমার জরুরি একজন ডাক্তার প্রয়োজন।" },
+    { "italian": "Dov'è il Pronto Soccorso?", "phonetic": "দোভেই ইল প্রোন্তো সোক্কোর্সো?", "bangla": "জরুরি চিকিৎসা কেন্দ্র (ইমার্জেন্সি) কোথায়?" },
+    { "italian": "Un biglietto per Roma Termini, per favore.", "phonetic": "উন বিলিয়েত্তো পের রোমা তেরমিনি, পের ফাভোরে।", "bangla": "রোম টার্মিনির একটি টিকিট দিন দয়া করে।" },
+    { "italian": "A che ora parte il treno?", "phonetic": "আ কে ওরা পারতে ইল ত্রেনো?", "bangla": "ট্রেনটি কয়টায় ছাড়বে?" },
+    { "italian": "Ho finito il lavoro, cosa faccio adesso?", "phonetic": "ও ফিনিতো ইল লাভোরো, কোজা ফাচো আদ্দেস্‌সো?", "bangla": "কাজ শেষ, এখন কী করব?" },
+    { "italian": "Chiami subito la polizia!", "phonetic": "কিয়ামি সুবিতো লা পোলিৎসিয়া!", "bangla": "দ্রুত পুলিশ ডাকুন (১১২)!" }
+  ]
+}

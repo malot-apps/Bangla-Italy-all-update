@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import {
   Newspaper,
@@ -19,6 +19,9 @@ import {
   AlertCircle,
   Film,
   Flame,
+  Maximize2,
+  RotateCcw,
+  Search,
 } from 'lucide-react';
 
 interface NewsItem {
@@ -35,12 +38,14 @@ interface NewsItem {
 interface VideoItem {
   id: string;
   youtubeId: string;
+  embedUrl?: string;
   title: string;
   channel: string;
   category: 'live_tv' | 'italy_guide';
   badge: string;
   duration?: string;
   description: string;
+  thumbnail: string;
 }
 
 // Fallback / Initial Seed News for instant rendering & rate-limit resilience
@@ -111,60 +116,94 @@ const INITIAL_NEWS: NewsItem[] = [
 const CURATED_VIDEOS: VideoItem[] = [
   {
     id: 'vid-1',
-    youtubeId: 'q8U2XFjQ5yA', // Jamuna TV Live
-    title: 'যমুনা টিভি লাইভ (Jamuna TV 24/7 Live News Stream)',
+    youtubeId: 'UCN6sm8iHiPd0cnoUardDAnw',
+    embedUrl: 'https://www.youtube.com/embed/live_stream?channel=UCN6sm8iHiPd0cnoUardDAnw',
+    title: 'যমুনা টিভি লাইভ (Jamuna TV 24/7 Live Stream)',
     channel: 'Jamuna TV',
     category: 'live_tv',
     badge: 'লাইভ সংবাদ',
+    thumbnail: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=600&q=80',
     description: 'বাংলাদেশ ও আন্তর্জাতিক সর্বশেষ তাজা খবর সার্বক্ষণিক সরাসরি সম্প্রচার।',
   },
   {
     id: 'vid-2',
-    youtubeId: 'W1k5r89Q28A', // Somoy TV Live
+    youtubeId: 'UCxHoBXkY88Tb8z1Ssj6CWsQ',
+    embedUrl: 'https://www.youtube.com/embed/live_stream?channel=UCxHoBXkY88Tb8z1Ssj6CWsQ',
     title: 'সময় টিভি লাইভ (Somoy TV 24/7 Live Stream)',
     channel: 'Somoy TV',
     category: 'live_tv',
     badge: 'লাইভ সংবাদ',
+    thumbnail: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=600&q=80',
     description: 'দেশের প্রধান প্রধান ঘটনার তাৎক্ষণিক খবর ও টকশো সরাসরি দেখুন।',
   },
   {
     id: 'vid-3',
-    youtubeId: '2bkmvYj1234', // Italy Guide: Permesso Kit
+    youtubeId: 'UCATUkaOHwO9EP_W87zCiPbA',
+    embedUrl: 'https://www.youtube.com/embed/live_stream?channel=UCATUkaOHwO9EP_W87zCiPbA',
+    title: 'চ্যানেল ২৪ লাইভ (Channel 24 24/7 Live Stream)',
+    channel: 'Channel 24',
+    category: 'live_tv',
+    badge: 'লাইভ সংবাদ',
+    thumbnail: 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=600&q=80',
+    description: '২৪ ঘণ্টার বাংলা খবরের নির্ভরযোগ্য সরাসরি লাইভ সম্প্রচার।',
+  },
+  {
+    id: 'vid-4',
+    youtubeId: 'UC5pChk_evEhlVaEEV5-C4yg',
+    embedUrl: 'https://www.youtube.com/embed/live_stream?channel=UC5pChk_evEhlVaEEV5-C4yg',
+    title: 'ডিবিসি নিউজ লাইভ (DBC News 24/7 Live)',
+    channel: 'DBC News',
+    category: 'live_tv',
+    badge: 'লাইভ সংবাদ',
+    thumbnail: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=600&q=80',
+    description: 'ডিবিসি নিউজের সরাসরি টেলিভিশন সম্প্রচার ও সর্বশেষ রাজনীতি ও অর্থনীতি সংবাদ।',
+  },
+  {
+    id: 'vid-5',
+    youtubeId: 'permesso_kit',
+    embedUrl: 'https://www.youtube.com/embed?listType=search&list=Italy+Permesso+di+Soggiorno+kit+Bangla',
     title: 'ইতালিতে পারমেসো দি সোজ্জোর্নো রিনিউ কিট (Kit Postale) পূরণের সম্পূর্ণ নিয়ম',
     channel: 'ইতালিপ্রবাসী গাইড',
     category: 'italy_guide',
     badge: 'ভিডিও গাইড',
-    duration: '১২:৪৫ মিনিট',
+    duration: 'ভিডিও টিউটোরিয়াল',
+    thumbnail: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80',
     description: 'পোস্ট অফিসে মডিউলো ১ ও মডিউলো ২ কীভাবে নির্ভুলভাবে পূরণ করবেন এবং ফিঙ্গারপ্রিন্ট ডেট নেবেন।',
   },
   {
-    id: 'vid-4',
-    youtubeId: '3ckmvYj5678', // Italy Guide: Residenza & Carta d'Identità
+    id: 'vid-6',
+    youtubeId: 'residenza_id',
+    embedUrl: 'https://www.youtube.com/embed?listType=search&list=Italy+Residenza+Carta+Identita+Bangla',
     title: 'ইতালিতে রেসিডেন্স (Residenza) ও আইডি কার্ড (Carta d\'Identità) আবেদনের নিয়ম',
     channel: 'ইতালি আইনি তথ্য',
     category: 'italy_guide',
     badge: 'ভিডিও গাইড',
-    duration: '০৯:১৫ মিনিট',
+    duration: 'ভিডিও টিউটোরিয়াল',
+    thumbnail: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=600&q=80',
     description: 'কম্যুন (Comune) অফিসে বাসা চুক্তির নথি জমা এবং স্থানীয় পুলিশ ভেরিফিকেশনের সহজ নির্দেশিকা।',
   },
   {
-    id: 'vid-5',
-    youtubeId: '4dkmvYj9012', // Italy Guide: SPID ID & INPS
+    id: 'vid-7',
+    youtubeId: 'spid_inps',
+    embedUrl: 'https://www.youtube.com/embed?listType=search&list=Italy+SPID+PosteID+Codice+Fiscale+Bangla',
     title: 'মোবাইলেই ইতালিয়ান SPID ডিজিটাল আইডি ও কোদিচে ফিস্কালে অ্যাক্টিভেশন',
     channel: 'টেক ও ইতালি সহায়তা',
     category: 'italy_guide',
     badge: 'ভিডিও গাইড',
-    duration: '০৮:৩০ মিনিট',
+    duration: 'ভিডিও টিউটোরিয়াল',
+    thumbnail: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80',
     description: 'পোস্টে ইতালিয়ানে (PosteID) বা স্পিড দিয়ে কীভাবে ইনপ্স (INPS) ও সাস্থ্য কার্ড চেক করবেন।',
   },
   {
-    id: 'vid-6',
-    youtubeId: '5ekmvYj3456', // Italy Guide: Family Reunion
+    id: 'vid-8',
+    youtubeId: 'family_reunion',
+    embedUrl: 'https://www.youtube.com/embed?listType=search&list=Italy+Nulla+Osta+Ricongiungimento+Familiare+Bangla',
     title: 'ইতালিতে পরিবার আনার নাল্লা ওস্তা (Ricongiungimento Familiare) ফাইল প্রসেস',
     channel: 'কমিউনিটি লিগ্যাল ডেস্ক',
     category: 'italy_guide',
     badge: 'ভিডিও গাইড',
-    duration: '১৪:২০ মিনিট',
+    duration: 'ভিডিও টিউটোরিয়াল',
+    thumbnail: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=80',
     description: 'হাউজিং সার্টিফিকেট (Idoneità Alloggiativa), মিনিমাম আয় ও প্রয়োজনীয় কাগজপত্রের তালিকা।',
   },
 ];
@@ -181,6 +220,88 @@ export default function NewsAndMedia() {
   // Video state
   const [activeVideoTab, setActiveVideoTab] = useState<'all' | 'live_tv' | 'italy_guide'>('all');
   const [currentVideo, setCurrentVideo] = useState<VideoItem>(CURATED_VIDEOS[0]);
+  const [reloadKey, setReloadKey] = useState<number>(0);
+  const [customUrlInput, setCustomUrlInput] = useState<string>('');
+  const [customUrlError, setCustomUrlError] = useState<string | null>(null);
+  const playerContainerRef = useRef<HTMLDivElement>(null);
+
+  const getEmbedUrl = (video: VideoItem): string => {
+    let base = video.embedUrl;
+    if (!base) {
+      if (video.youtubeId.startsWith('UC')) {
+        base = `https://www.youtube.com/embed/live_stream?channel=${video.youtubeId}`;
+      } else {
+        base = `https://www.youtube.com/embed/${video.youtubeId}`;
+      }
+    }
+    const separator = base.includes('?') ? '&' : '?';
+    return `${base}${separator}autoplay=1&playsinline=1&rel=0&modestbranding=1`;
+  };
+
+  const handleToggleFullscreen = () => {
+    if (!playerContainerRef.current) return;
+    if (!document.fullscreenElement) {
+      playerContainerRef.current.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
+  const handleSelectVideo = (video: VideoItem) => {
+    setCurrentVideo(video);
+    setReloadKey((prev) => prev + 1);
+    if (typeof window !== 'undefined' && window.innerWidth < 1024 && playerContainerRef.current) {
+      playerContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
+
+  const handleLoadCustomUrl = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCustomUrlError(null);
+    const trimmed = customUrlInput.trim();
+    if (!trimmed) return;
+
+    let embedUrl = '';
+    if (trimmed.includes('channel=')) {
+      const match = trimmed.match(/channel=([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        embedUrl = `https://www.youtube.com/embed/live_stream?channel=${match[1]}`;
+      }
+    } else if (trimmed.includes('youtu.be/')) {
+      const match = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+      if (match && match[1]) {
+        embedUrl = `https://www.youtube.com/embed/${match[1]}`;
+      }
+    } else if (trimmed.includes('youtube.com/')) {
+      const match = trimmed.match(/(?:watch\?v=|live\/|embed\/)([a-zA-Z0-9_-]{11})/);
+      if (match && match[1]) {
+        embedUrl = `https://www.youtube.com/embed/${match[1]}`;
+      }
+    } else if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+      embedUrl = `https://www.youtube.com/embed/${trimmed}`;
+    } else if (trimmed.startsWith('UC')) {
+      embedUrl = `https://www.youtube.com/embed/live_stream?channel=${trimmed}`;
+    }
+
+    if (embedUrl) {
+      const customVid: VideoItem = {
+        id: `custom-${Date.now()}`,
+        youtubeId: 'custom',
+        embedUrl,
+        title: 'কাস্টম স্ট্রিম (সরাসরি ইন্টারফেসে লোড করা)',
+        channel: 'কাস্টম লিংক',
+        category: 'live_tv',
+        badge: 'সরাসরি প্লেয়ার',
+        description: 'সরাসরি এই ওয়েবসাইটে লোড করা ইউটিউব লাইভ টিভি বা ভিডিও।',
+        thumbnail: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=600&q=80',
+      };
+      setCurrentVideo(customVid);
+      setCustomUrlInput('');
+      setReloadKey((prev) => prev + 1);
+    } else {
+      setCustomUrlError('সঠিক ইউটিউব ভিডিও বা লাইভ লিঙ্ক দিন (যেমন: https://youtube.com/watch?v=...)');
+    }
+  };
 
   // Fetch Live RSS from rss2json
   const fetchRssNews = async () => {
@@ -216,11 +337,27 @@ export default function NewsAndMedia() {
               thumb = imgMatch[1];
             }
           }
-          if (!thumb) {
-            thumb =
-              feed.source === 'প্রথম আলো'
-                ? 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80'
-                : 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&w=600&q=80';
+          const defaultSourceThumb =
+            feed.source === 'প্রথম আলো'
+              ? 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80'
+              : 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&w=600&q=80';
+
+          if (thumb) {
+            try {
+              const parsed = new URL(thumb);
+              const isAllowed =
+                parsed.hostname === 'images.unsplash.com' ||
+                parsed.hostname === 'picsum.photos' ||
+                parsed.hostname.endsWith('prothomalo.com') ||
+                parsed.hostname.endsWith('bdnews24.com');
+              if (!isAllowed) {
+                thumb = defaultSourceThumb;
+              }
+            } catch {
+              thumb = defaultSourceThumb;
+            }
+          } else {
+            thumb = defaultSourceThumb;
           }
 
           let cleanSnippet = item.description
@@ -616,19 +753,21 @@ export default function NewsAndMedia() {
             {/* Main Video Embed Player (8 cols) */}
             <div className="lg:col-span-8 bg-white dark:bg-slate-950 rounded-3xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
               {/* Responsive 16:9 Aspect Video Container */}
-              <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-lg">
+              <div
+                ref={playerContainerRef}
+                className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-2xl border border-slate-200 dark:border-slate-800"
+              >
                 <iframe
-                  key={currentVideo.id}
-                  src={`https://www.youtube-nocookie.com/embed/${currentVideo.youtubeId}?autoplay=0&rel=0&modestbranding=1`}
+                  key={`${currentVideo.id}-${reloadKey}`}
+                  src={getEmbedUrl(currentVideo)}
                   title={currentVideo.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  className="w-full h-full border-0"
+                  className="absolute inset-0 w-full h-full border-0"
                 />
               </div>
 
-              {/* Active Video Info */}
+              {/* Active Video Info & In-Page Controls */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
@@ -658,16 +797,73 @@ export default function NewsAndMedia() {
                   </p>
                 </div>
 
-                <a
-                  href={`https://www.youtube.com/watch?v=${currentVideo.youtubeId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30 transition-transform active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
-                >
-                  <Play className="w-3.5 h-3.5 fill-white" />
-                  <span>ইউটিউবে খুলুন</span>
-                </a>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => setReloadKey((prev) => prev + 1)}
+                    title="ভিডিও রিফ্রেশ বা পুনরায় চালু করুন"
+                    className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-300 dark:border-slate-700"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>রিলোড</span>
+                  </button>
+
+                  <button
+                    onClick={handleToggleFullscreen}
+                    title="ওয়েবসাইটের মধ্যেই ফুলস্ক্রিনে দেখুন"
+                    className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30 transition-transform active:scale-95 whitespace-nowrap cursor-pointer"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span>ফুলস্ক্রিন</span>
+                  </button>
+                </div>
               </div>
+
+              {/* Quick live channel switch pills */}
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                  <Radio className="w-3 h-3 text-red-500 animate-pulse" />
+                  সরাসরি চ্যানেল:
+                </span>
+                {CURATED_VIDEOS.filter((v) => v.category === 'live_tv').map((tv) => (
+                  <button
+                    key={tv.id}
+                    onClick={() => handleSelectVideo(tv)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      currentVideo.id === tv.id
+                        ? 'bg-red-600 text-white shadow-sm'
+                        : 'bg-slate-100 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {tv.channel}
+                  </button>
+                ))}
+              </div>
+
+              {/* Paste any YouTube link to play directly without leaving */}
+              <form onSubmit={handleLoadCustomUrl} className="pt-2 flex flex-col sm:flex-row items-stretch gap-2">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={customUrlInput}
+                    onChange={(e) => {
+                      setCustomUrlInput(e.target.value);
+                      if (customUrlError) setCustomUrlError(null);
+                    }}
+                    placeholder="যেকোনো ইউটিউব লাইভ বা ভিডিও লিংক পেস্ট করুন (যেমন: https://youtube.com/watch?v=...)"
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shrink-0"
+                >
+                  প্লেয়ার-এ চালান
+                </button>
+              </form>
+              {customUrlError && (
+                <p className="text-[11px] text-red-500 font-medium pl-1">{customUrlError}</p>
+              )}
             </div>
 
             {/* Playlist Column (4 cols) */}
@@ -686,7 +882,7 @@ export default function NewsAndMedia() {
                   return (
                     <div
                       key={vid.id}
-                      onClick={() => setCurrentVideo(vid)}
+                      onClick={() => handleSelectVideo(vid)}
                       className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center gap-3 ${
                         isActive
                           ? 'bg-red-50 dark:bg-red-950/40 border-red-500 dark:border-red-600 shadow-sm ring-1 ring-red-500/30'
@@ -696,7 +892,7 @@ export default function NewsAndMedia() {
                       {/* Video Thumbnail with Play Overlay */}
                       <div className="relative w-20 h-14 rounded-xl overflow-hidden bg-slate-800 shrink-0">
                         <Image
-                          src={`https://img.youtube.com/vi/${vid.youtubeId}/mqdefault.jpg`}
+                          src={vid.thumbnail}
                           alt={vid.title}
                           fill
                           sizes="80px"

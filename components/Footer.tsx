@@ -16,6 +16,8 @@ import {
   Check,
   Tv,
   Calculator,
+  Globe,
+  Languages,
 } from 'lucide-react';
 
 interface FooterProps {
@@ -98,6 +100,15 @@ export default function Footer({ onNavigate, onEmergencyClick }: FooterProps) {
               </li>
               <li>
                 <button
+                  onClick={() => onNavigate('translator')}
+                  className="hover:text-amber-300 transition-colors flex items-center gap-1.5 text-left cursor-pointer"
+                >
+                  <Languages className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>ইতালি প্রবাসী ভয়েস ও টেক্সট ট্রান্সলেটর</span>
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => onNavigate('language')}
                   className="hover:text-amber-300 transition-colors flex items-center gap-1.5 text-left cursor-pointer"
                 >
@@ -139,6 +150,15 @@ export default function Footer({ onNavigate, onEmergencyClick }: FooterProps) {
                 >
                   <Home className="w-3.5 h-3.5 text-emerald-400" />
                   <span>চাকরি ও রুম / বাসা ভাড়া বোর্ড</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('italy-probashi')}
+                  className="hover:text-amber-300 transition-colors flex items-center gap-1.5 text-left cursor-pointer"
+                >
+                  <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>ইতালি প্রবাসী সংবাদ ও বিশেষ ভিডিও</span>
                 </button>
               </li>
               <li>

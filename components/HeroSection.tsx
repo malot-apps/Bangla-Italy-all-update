@@ -19,6 +19,7 @@ import {
   MapPin,
   Calculator,
 } from 'lucide-react';
+import { useLanguage } from '@/lib/LanguageContext';
 
 interface HeroSectionProps {
   onQuickAction: (targetId: string, filterQuery?: string) => void;
@@ -26,6 +27,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onQuickAction, onEmbassyNoticeClick }: HeroSectionProps) {
+  const { currentLang, t } = useLanguage();
   const quickActions = [
     {
       title: 'পারমেসো রিনিউ গাইড',
@@ -144,18 +146,15 @@ export default function HeroSection({ onQuickAction, onEmbassyNoticeClick }: Her
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-800/80 border border-emerald-600/50 text-emerald-200 text-xs sm:text-sm font-semibold mb-5 shadow-sm">
             <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>ইতালি প্রবাসী বাংলাদেশিদের সর্ববৃহৎ সেবা পোর্টাল</span>
+            <span>{t('heroBadge', 'ইতালি প্রবাসী বাংলাদেশিদের সর্ববৃহৎ সেবা পোর্টাল')}</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.2] text-white">
-            ইতালিতে আপনার দিনগুলো হোক{' '}
-            <span className="bg-gradient-to-r from-amber-300 via-amber-200 to-emerald-200 bg-clip-text text-transparent underline decoration-amber-400/40 underline-offset-8">
-              সহজ ও নিরাপদ
-            </span>
+            {t('heroTitle', 'ইতালিতে আপনার দিনগুলো হোক সহজ ও নিরাপদ')}
           </h1>
 
           <p className="mt-5 text-base sm:text-lg text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
-            পারমেসো রিনিউ থেকে শুরু করে স্পিড আইডি, ইতালিয়ান ভাষা অডিও গাইড, অফিশিয়াল চিঠির ফরম্যাট এবং শহরভিত্তিক কাফ ও হালাল শপ ডিরেক্টরি—সবকিছু এক প্ল্যাটফর্মে।
+            {t('heroSubtitle', 'পারমেসো রিনিউ থেকে শুরু করে স্পিড আইডি, ইতালিয়ান ভাষা অডিও গাইড, অফিশিয়াল চিঠির ফরম্যাট এবং শহরভিত্তিক কাফ ও হালাল শপ ডিরেক্টরি—সবকিছু এক প্ল্যাটফর্মে।')}
           </p>
 
           {/* Quick Metrics Bar */}

@@ -5,11 +5,13 @@ import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import CurrencyConverter from '@/components/CurrencyConverter';
 import ItalianTaxSalaryCalculator from '@/components/ItalianTaxSalaryCalculator';
+import ImmigrantTranslator from '@/components/ImmigrantTranslator';
 import LanguageHelper from '@/components/LanguageHelper';
 import LegalGuides from '@/components/LegalGuides';
 import LetterTemplates from '@/components/LetterTemplates';
 import DirectoryHotlines from '@/components/DirectoryHotlines';
 import RoomJobBoard from '@/components/RoomJobBoard';
+import ItalyProbashiNewsVideo from '@/components/ItalyProbashiNewsVideo';
 import NewsAndMedia from '@/components/NewsAndMedia';
 import NoticeBoard from '@/components/NoticeBoard';
 import Footer from '@/components/Footer';
@@ -72,6 +74,9 @@ export default function HomePage() {
         {/* Client-Side Italian Tax & Salary Calculator (RAL, IRPEF Brackets, Clear Table Format) */}
         <ItalianTaxSalaryCalculator />
 
+        {/* Dedicated Immigrant Translation Tool: Google Translate Widget, Voice/Text Translator & Categorized Quick Phrases */}
+        <ImmigrantTranslator />
+
         {/* Italian-Bangla Language Helper with Web Speech Synthesis & Flashcards */}
         <LanguageHelper />
 
@@ -86,6 +91,9 @@ export default function HomePage() {
 
         {/* Community Room & Job Notice Board */}
         <RoomJobBoard />
+
+        {/* Dedicated Italy Probashi News & Video Section (Google News RSS 'ইতালি প্রবাসী' + YouTube Video Streams) */}
+        <ItalyProbashiNewsVideo />
 
         {/* Live Bangladesh News Feed (Prothom Alo / BDNews24) & Live YouTube TV */}
         <NewsAndMedia />

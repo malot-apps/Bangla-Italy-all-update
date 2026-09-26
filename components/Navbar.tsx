@@ -18,7 +18,12 @@ import {
   Home,
   Tv,
   Calculator,
+  Globe,
+  Languages,
 } from 'lucide-react';
+import GoogleTranslateWidget from './GoogleTranslateWidget';
+import { PWAInstallButton } from './PWAController';
+import { useLanguage, AppLanguage } from '@/lib/LanguageContext';
 
 interface NavbarProps {
   onSearchClick: () => void;
@@ -35,6 +40,7 @@ export default function Navbar({
   activeSection,
   setActiveSection,
 }: NavbarProps) {
+  const { currentLang, setLanguage, t } = useLanguage();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,15 +66,16 @@ export default function Navbar({
   };
 
   const navItems = [
-    { id: 'currency', label: 'ইউরো রেট', icon: DollarSign, badge: 'লাইভ' },
-    { id: 'tax-calculator', label: 'ট্যাক্স ও বেতন', icon: Calculator, badge: 'টেবিল' },
-    { id: 'language', label: 'ভাষা সহায়িকা', icon: BookOpen, badge: 'অডিও' },
-    { id: 'legal', label: 'পারমেসো ও লিগ্যাল', icon: ShieldCheck },
-    { id: 'letters', label: 'চিঠির ফরম্যাট', icon: FileText, badge: 'PDF' },
-    { id: 'directory', label: 'লোকাল ডিরেক্টরি', icon: MapPin },
-    { id: 'room-job-board', label: 'চাকরি ও রুম', icon: Home, badge: 'নতুন' },
-    { id: 'news-media', label: 'তাজা খবর ও টিভি', icon: Tv, badge: 'লাইভ' },
-    { id: 'faq', label: 'জরুরি নোটিস ও FAQ', icon: HelpCircle },
+    { id: 'currency', label: t('navCurrency', 'ইউরো রেট'), icon: DollarSign, badge: currentLang === 'bn' ? 'লাইভ' : 'LIVE' },
+    { id: 'tax-calculator', label: t('navTax', 'ট্যাক্স ও বেতন'), icon: Calculator, badge: currentLang === 'bn' ? 'টেবিল' : 'TAX' },
+    { id: 'translator', label: t('navTranslator', 'অনুবাদ ও ভাষা'), icon: Languages, badge: currentLang === 'bn' ? 'ভয়েস' : 'VOICE' },
+    { id: 'legal', label: t('navLegal', 'পারমেসো ও লিগ্যাল'), icon: ShieldCheck },
+    { id: 'letters', label: t('navLetters', 'চিঠির ফরম্যাট'), icon: FileText, badge: 'PDF' },
+    { id: 'directory', label: t('navDirectory', 'লোকাল ডিরেক্টরি'), icon: MapPin },
+    { id: 'room-job-board', label: currentLang === 'bn' ? 'চাকরি ও রুম' : currentLang === 'en' ? 'Jobs & Rooms' : 'Lavoro e Casa', icon: Home, badge: currentLang === 'bn' ? 'নতুন' : 'NEW' },
+    { id: 'italy-probashi', label: currentLang === 'bn' ? 'প্রবাসী নিউজ ও ভিডিও' : currentLang === 'en' ? 'Community News & Video' : 'Notizie e Video', icon: Globe, badge: 'HOT' },
+    { id: 'news-media', label: t('navNews', 'তাজা খবর ও টিভি'), icon: Tv, badge: currentLang === 'bn' ? 'লাইভ' : 'LIVE' },
+    { id: 'faq', label: currentLang === 'bn' ? 'জরুরি নোটিস ও FAQ' : currentLang === 'en' ? 'Notices & FAQ' : 'Avvisi e FAQ', icon: HelpCircle },
   ];
 
   const scrollToSection = (id: string) => {
@@ -89,20 +96,65 @@ export default function Navbar({
             : 'bg-emerald-900 dark:bg-slate-950 border-b border-emerald-800/60 dark:border-slate-800'
         }`}
       >
-        {/* Top Mini Banner for Emergency Notice */}
-        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-emerald-100 text-xs py-1.5 px-4 text-center font-medium border-b border-emerald-700/50 hidden sm:flex items-center justify-center gap-2">
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-900 animate-pulse">
-            জরুরি
-          </span>
-          <span>
-            ইতালিতে যেকোনো জরুরি স্বাস্থ্য সেবায় <strong>১১৮</strong> ও সার্বিক নিরাপত্তা হেল্পলাইনে <strong>১১২</strong> ডায়াল করুন (টোল ফ্রি)।
-          </span>
-          <button
-            onClick={onEmergencyClick}
-            className="underline hover:text-amber-300 font-bold ml-1 transition-colors cursor-pointer"
-          >
-            হটলাইন তালিকা দেখুন →
-          </button>
+        {/* Top Mini Banner with Emergency Notice & Multi-Language Switcher */}
+        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-emerald-100 text-xs py-1.5 px-4 font-medium border-b border-emerald-700/50 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-900 animate-pulse">
+              {currentLang === 'bn' ? 'জরুরি' : currentLang === 'en' ? 'URGENT' : 'URGENTE'}
+            </span>
+            <span className="hidden sm:inline">
+              {t('emergencyBar')}
+            </span>
+            <button
+              onClick={onEmergencyClick}
+              className="underline hover:text-amber-300 font-bold ml-1 transition-colors cursor-pointer"
+            >
+              {t('hotlineBtn')}
+            </button>
+          </div>
+
+          {/* Top Bar Language Selector & Tools */}
+          <div className="flex items-center gap-2 ml-auto">
+            {/* Dynamic 3-Language Switcher (BN / EN / IT) */}
+            <div className="flex items-center p-0.5 rounded-xl bg-emerald-950/90 dark:bg-slate-900 border border-emerald-700/60 dark:border-slate-800 text-xs shadow-inner">
+              <button
+                onClick={() => setLanguage('bn')}
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  currentLang === 'bn'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-emerald-200 dark:text-slate-300 hover:text-white'
+                }`}
+                title="বাংলা (Bengali)"
+              >
+                🇧🇩 বাংলা
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  currentLang === 'en'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-emerald-200 dark:text-slate-300 hover:text-white'
+                }`}
+                title="English"
+              >
+                🇬🇧 EN
+              </button>
+              <button
+                onClick={() => setLanguage('it')}
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  currentLang === 'it'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-emerald-200 dark:text-slate-300 hover:text-white'
+                }`}
+                title="Italiano"
+              >
+                🇮🇹 IT
+              </button>
+            </div>
+
+            <PWAInstallButton />
+            <GoogleTranslateWidget />
+          </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
