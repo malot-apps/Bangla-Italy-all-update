@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useSyncExternalStore } from 'react';
+import React, { useState, useEffect, useMemo, useSyncExternalStore, useCallback, useRef } from 'react';
 import {
   Clock,
   MapPin,
@@ -22,6 +22,7 @@ import {
   Share2,
   Info,
   Sparkles,
+  X,
 } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 
@@ -58,6 +59,18 @@ export const MAJOR_ITALIAN_CITIES: ItalianCity[] = [
   { id: 'ancona', nameBn: 'আনকোনা', nameIt: 'Ancona', nameEn: 'Ancona', region: 'Marche', lat: 43.6158, lng: 13.5189, qiblaBearing: 126.6, distanceKm: 3620 },
   { id: 'modena', nameBn: 'মোদেনা', nameIt: 'Modena', nameEn: 'Modena', region: 'Emilia-Romagna', lat: 44.6471, lng: 10.9252, qiblaBearing: 125.4, distanceKm: 3820 },
   { id: 'reggio-emilia', nameBn: 'রেজ্জো এমিলিয়া', nameIt: 'Reggio Emilia', nameEn: 'Reggio Emilia', region: 'Emilia-Romagna', lat: 44.6983, lng: 10.6312, qiblaBearing: 125.1, distanceKm: 3850 },
+  { id: 'trieste', nameBn: 'ত্রিয়েস্তে', nameIt: 'Trieste', nameEn: 'Trieste', region: 'Friuli Venezia Giulia', lat: 45.6495, lng: 13.7768, qiblaBearing: 129.5, distanceKm: 3720 },
+  { id: 'salerno', nameBn: 'সালের্নো', nameIt: 'Salerno', nameEn: 'Salerno', region: 'Campania', lat: 40.6824, lng: 14.7681, qiblaBearing: 121.2, distanceKm: 3450 },
+  { id: 'prato', nameBn: 'প্রাতো', nameIt: 'Prato', nameEn: 'Prato', region: 'Toscana', lat: 43.8777, lng: 11.1024, qiblaBearing: 125.1, distanceKm: 3800 },
+  { id: 'como', nameBn: 'কোমো', nameIt: 'Como', nameEn: 'Como', region: 'Lombardia', lat: 45.8081, lng: 9.0852, qiblaBearing: 124.8, distanceKm: 3990 },
+  { id: 'parma', nameBn: 'পারমা', nameIt: 'Parma', nameEn: 'Parma', region: 'Emilia-Romagna', lat: 44.8015, lng: 10.3279, qiblaBearing: 125.3, distanceKm: 3870 },
+  { id: 'rimini', nameBn: 'রিমিনি', nameIt: 'Rimini', nameEn: 'Rimini', region: 'Emilia-Romagna', lat: 44.0678, lng: 12.5695, qiblaBearing: 126.7, distanceKm: 3690 },
+  { id: 'cagliari', nameBn: 'কালিয়ারি', nameIt: 'Cagliari', nameEn: 'Cagliari', region: 'Sardegna', lat: 39.2238, lng: 9.1217, qiblaBearing: 114.9, distanceKm: 3670 },
+  { id: 'messina', nameBn: 'মেসিনা', nameIt: 'Messina', nameEn: 'Messina', region: 'Sicilia', lat: 38.1938, lng: 15.5540, qiblaBearing: 116.1, distanceKm: 3260 },
+  { id: 'foggia', nameBn: 'ফোজ্জা', nameIt: 'Foggia', nameEn: 'Foggia', region: 'Puglia', lat: 41.4622, lng: 15.5447, qiblaBearing: 123.1, distanceKm: 3420 },
+  { id: 'ravenna', nameBn: 'রাভেনা', nameIt: 'Ravenna', nameEn: 'Ravenna', region: 'Emilia-Romagna', lat: 44.4184, lng: 12.2035, qiblaBearing: 126.4, distanceKm: 3730 },
+  { id: 'ferrara', nameBn: 'ফেরারা', nameIt: 'Ferrara', nameEn: 'Ferrara', region: 'Emilia-Romagna', lat: 44.8381, lng: 11.6198, qiblaBearing: 126.5, distanceKm: 3800 },
+  { id: 'monza', nameBn: 'মোনজা', nameIt: 'Monza', nameEn: 'Monza', region: 'Lombardia', lat: 45.5845, lng: 9.2744, qiblaBearing: 125.3, distanceKm: 3940 },
 ];
 
 export interface PrayerTimesData {
@@ -125,12 +138,33 @@ function useIsClient() {
   );
 }
 
+// Great circle distance between two points in km (Haversine formula)
+function calculateHaversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 export default function PrayerTimesSection() {
   const { currentLang } = useLanguage();
   const isMounted = useIsClient();
 
   const [selectedCityId, setSelectedCityId] = useState<string>('rome');
-  const [customLocation, setCustomLocation] = useState<{ lat: number; lng: number; label: string } | null>(null);
+  const [customLocation, setCustomLocation] = useState<{
+    lat: number;
+    lng: number;
+    labelBn: string;
+    labelIt: string;
+    labelEn: string;
+  } | null>(null);
   const [calculationMethod, setCalculationMethod] = useState<number>(3);
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesData>(DEFAULT_TIMINGS);
   const [prayerMeta, setPrayerMeta] = useState<PrayerMeta>({
@@ -144,12 +178,17 @@ export default function PrayerTimesSection() {
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLocating, setIsLocating] = useState<boolean>(false);
+  const [isAutoDetected, setIsAutoDetected] = useState<boolean>(false);
+  const [detectedCityLabel, setDetectedCityLabel] = useState<string>('');
+  const [autoDetectBanner, setAutoDetectBanner] = useState<boolean>(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [showAllCities, setShowAllCities] = useState<boolean>(false);
+  const hasAutoDetectedRef = useRef<boolean>(false);
 
   // Keep a live 1-second clock after mount
   useEffect(() => {
@@ -163,9 +202,9 @@ export default function PrayerTimesSection() {
     if (customLocation) {
       return {
         id: 'custom',
-        nameBn: customLocation.label,
-        nameIt: customLocation.label,
-        nameEn: customLocation.label,
+        nameBn: customLocation.labelBn,
+        nameIt: customLocation.labelIt,
+        nameEn: customLocation.labelEn,
         region: 'GPS Position',
         lat: customLocation.lat,
         lng: customLocation.lng,
@@ -245,67 +284,203 @@ export default function PrayerTimesSection() {
     }
   };
 
-  // Handle Geolocation auto-detection
-  const handleDetectLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationError(
-        currentLang === 'bn'
-          ? 'আপনার ব্রাউজার লোকেশন সমর্থন করে না।'
-          : currentLang === 'it'
-          ? 'La geolocalizzazione non è supportata dal browser.'
-          : 'Geolocation is not supported by your browser.'
-      );
-      return;
-    }
-
-    setIsLoading(true);
-    setLocationError(null);
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        // Check if nearest major Italian city
-        let closestCity = MAJOR_ITALIAN_CITIES[0];
-        let minDistance = Infinity;
-
-        MAJOR_ITALIAN_CITIES.forEach((city) => {
-          const dist = Math.hypot(city.lat - latitude, city.lng - longitude);
-          if (dist < minDistance) {
-            minDistance = dist;
-            closestCity = city;
-          }
-        });
-
-        const label =
-          currentLang === 'bn'
-            ? `আপনার অবস্থান (কাছে: ${closestCity.nameBn})`
-            : currentLang === 'it'
-            ? `Posizione Rilevata (Vicino: ${closestCity.nameIt})`
-            : `Detected Location (Near: ${closestCity.nameEn})`;
-
-        setCustomLocation({
-          lat: latitude,
-          lng: longitude,
-          label,
-        });
-        setIsLoading(false);
-      },
-      (error) => {
-        setIsLoading(false);
-        let msg =
-          currentLang === 'bn'
-            ? 'লোকেশন পারমিশন দেওয়া হয়নি। তালিকা থেকে শহর বেছে নিন।'
-            : currentLang === 'it'
-            ? 'Permesso di localizzazione non concesso. Seleziona una città dall\'elenco.'
-            : 'Location permission was denied. Please select a city from the list.';
-        if (error.code === error.POSITION_UNAVAILABLE) {
-          msg = currentLang === 'bn' ? 'লোকেশন সিগন্যাল পাওয়া যায়নি।' : 'Location unavailable.';
+  // Perform Geolocation detection for city in Italy
+  const performCityDetection = useCallback(
+    async (isAuto: boolean = false) => {
+      if (typeof window === 'undefined' || !navigator.geolocation) {
+        if (!isAuto) {
+          setLocationError(
+            currentLang === 'bn'
+              ? 'আপনার ব্রাউজার লোকেশন সমর্থন করে না।'
+              : currentLang === 'it'
+              ? 'La geolocalizzazione non è supportata dal browser.'
+              : 'Geolocation is not supported by your browser.'
+          );
         }
-        setLocationError(msg);
-      },
-      { timeout: 10000, enableHighAccuracy: true }
-    );
-  };
+        return;
+      }
+
+      // Check cached city from localStorage first if available
+      try {
+        const cached = localStorage.getItem('italy_probashi_detected_city');
+        if (cached) {
+          const data = JSON.parse(cached);
+          if (data.cityId && Date.now() - (data.timestamp || 0) < 86400000) {
+            setSelectedCityId(data.cityId);
+            if (data.lat && data.lng) {
+              const lBn = data.labelBn || data.label || data.cityId;
+              const lIt = data.labelIt || data.label || data.cityId;
+              const lEn = data.labelEn || data.label || data.cityId;
+              setCustomLocation({
+                lat: data.lat,
+                lng: data.lng,
+                labelBn: lBn,
+                labelIt: lIt,
+                labelEn: lEn,
+              });
+              setIsAutoDetected(true);
+              setDetectedCityLabel(currentLang === 'bn' ? lBn : currentLang === 'it' ? lIt : lEn);
+            }
+          }
+        }
+      } catch {}
+
+      // Check permissions API if available
+      if (navigator.permissions && navigator.permissions.query) {
+        try {
+          const permResult = await navigator.permissions.query({ name: 'geolocation' });
+          if (isAuto && permResult.state === 'denied') {
+            return;
+          }
+        } catch {}
+      }
+
+      setIsLocating(true);
+      if (!isAuto) setLocationError(null);
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          // 1. Calculate closest city from Italian cities list
+          let closestCity = MAJOR_ITALIAN_CITIES[0];
+          let minDistanceKm = Infinity;
+
+          for (const city of MAJOR_ITALIAN_CITIES) {
+            const dist = calculateHaversineDistanceKm(latitude, longitude, city.lat, city.lng);
+            if (dist < minDistanceKm) {
+              minDistanceKm = dist;
+              closestCity = city;
+            }
+          }
+
+          // 2. Attempt quick reverse geocode to get official Italian municipality/town name
+          let detectedTown = '';
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
+            const geoRes = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=it`,
+              { signal: controller.signal }
+            );
+            clearTimeout(timeoutId);
+            if (geoRes.ok) {
+              const geoData = await geoRes.json();
+              const townName = geoData.city || geoData.locality || geoData.principalSubdivision;
+              if (townName) {
+                detectedTown = townName;
+              }
+            }
+          } catch {
+            // fallback gracefully to closest city
+          }
+
+          // Match detected town with Italian cities if available
+          let matchedCity = closestCity;
+          if (detectedTown) {
+            const directMatch = MAJOR_ITALIAN_CITIES.find(
+              (c) =>
+                c.nameIt.toLowerCase() === detectedTown.toLowerCase() ||
+                c.id.toLowerCase() === detectedTown.toLowerCase() ||
+                detectedTown.toLowerCase().includes(c.nameIt.toLowerCase())
+            );
+            if (directMatch) {
+              matchedCity = directMatch;
+            }
+          }
+
+          // Check if coordinates are in/near Italy
+          const isInItaly =
+            (latitude >= 35.0 && latitude <= 47.5 && longitude >= 6.5 && longitude <= 19.0) ||
+            minDistanceKm < 600;
+
+          if (isInItaly) {
+            setSelectedCityId(matchedCity.id);
+            const cityLabelBn =
+              detectedTown && detectedTown.toLowerCase() !== matchedCity.nameIt.toLowerCase()
+                ? `${detectedTown} (${matchedCity.nameBn})`
+                : matchedCity.nameBn;
+            const cityLabelIt =
+              detectedTown && detectedTown.toLowerCase() !== matchedCity.nameIt.toLowerCase()
+                ? `${detectedTown} (${matchedCity.nameIt})`
+                : matchedCity.nameIt;
+            const cityLabelEn =
+              detectedTown && detectedTown.toLowerCase() !== matchedCity.nameEn.toLowerCase()
+                ? `${detectedTown} (${matchedCity.nameEn})`
+                : matchedCity.nameEn;
+
+            setCustomLocation({
+              lat: latitude,
+              lng: longitude,
+              labelBn: cityLabelBn,
+              labelIt: cityLabelIt,
+              labelEn: cityLabelEn,
+            });
+
+            setIsAutoDetected(true);
+            const activeLabel = currentLang === 'bn' ? cityLabelBn : currentLang === 'it' ? cityLabelIt : cityLabelEn;
+            setDetectedCityLabel(activeLabel);
+            setAutoDetectBanner(true);
+            setLocationError(null);
+
+            // Persist detected city in localStorage
+            try {
+              localStorage.setItem(
+                'italy_probashi_detected_city',
+                JSON.stringify({
+                  cityId: matchedCity.id,
+                  lat: latitude,
+                  lng: longitude,
+                  labelBn: cityLabelBn,
+                  labelIt: cityLabelIt,
+                  labelEn: cityLabelEn,
+                  timestamp: Date.now(),
+                })
+              );
+            } catch {}
+          } else {
+            if (!isAuto) {
+              setLocationError(
+                currentLang === 'bn'
+                  ? `আপনার অবস্থান ইতালির বাইরে সনাক্ত হয়েছে। নিকটতম শহর হিসেবে ${closestCity.nameBn} দেখানো হচ্ছে।`
+                  : `Posizione fuori dall'Italia. Viene mostrata la città più vicina: ${closestCity.nameIt}.`
+              );
+            }
+          }
+
+          setIsLocating(false);
+        },
+        (error) => {
+          setIsLocating(false);
+          if (!isAuto) {
+            let msg =
+              currentLang === 'bn'
+                ? 'লোকেশন পারমিশন পাওয়া যায়নি। অনুগ্রহ করে ব্রাউজারে লোকেশন অনুমতি দিন অথবা তালিকা থেকে শহর বেছে নিন।'
+                : currentLang === 'it'
+                ? 'Permesso di geolocalizzazione non concesso. Seleziona una città dall\'elenco.'
+                : 'Location permission was denied. Please select a city from the list.';
+            if (error.code === error.POSITION_UNAVAILABLE) {
+              msg = currentLang === 'bn' ? 'লোকেশন সিগন্যাল পাওয়া যায়নি।' : 'Location signal unavailable.';
+            } else if (error.code === error.TIMEOUT) {
+              msg = currentLang === 'bn' ? 'লোকেশন সনাক্তকরণে সময় শেষ হয়েছে।' : 'Location request timed out.';
+            }
+            setLocationError(msg);
+          }
+        },
+        { timeout: 10000, maximumAge: 300000, enableHighAccuracy: false }
+      );
+    },
+    [currentLang]
+  );
+
+  // Automatically detect user's current city in Italy on mount using Geolocation API
+  useEffect(() => {
+    if (hasAutoDetectedRef.current) return;
+    hasAutoDetectedRef.current = true;
+
+    // Automatically invoke Geolocation API
+    performCityDetection(true);
+  }, [performCityDetection]);
 
   // Calculate current active prayer and next prayer countdown
   const prayerSchedule = useMemo(() => {
@@ -570,13 +745,23 @@ export default function PrayerTimesSection() {
           {/* Action Tools: Geolocation, Audio Chime, Copy, Notifications */}
           <div className="flex flex-wrap items-center gap-2">
             <button
-              onClick={handleDetectLocation}
-              disabled={isLoading}
+              onClick={() => performCityDetection(false)}
+              disabled={isLocating}
               title={currentLang === 'bn' ? 'আমার বর্তমান লোকেশন ব্যবহার করুন' : 'Use Current Location'}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors shadow-2xs"
+              className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border transition-colors shadow-2xs ${
+                isAutoDetected
+                  ? 'bg-emerald-100 dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-200 border-emerald-400 dark:border-emerald-700'
+                  : 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200/80 dark:border-emerald-800/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+              }`}
             >
-              <Navigation className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-              <span className="whitespace-nowrap">{currentLang === 'bn' ? 'আমার লোকেশন' : currentLang === 'it' ? 'Mia Posizione' : 'My Location'}</span>
+              <Navigation className={`w-3.5 h-3.5 ${isLocating ? 'animate-spin' : isAutoDetected ? 'text-amber-500 fill-amber-500' : ''}`} />
+              <span className="whitespace-nowrap">
+                {isLocating
+                  ? currentLang === 'bn' ? 'সনাক্ত হচ্ছে...' : currentLang === 'it' ? 'Rilevamento...' : 'Detecting...'
+                  : isAutoDetected
+                  ? currentLang === 'bn' ? 'জিপিএস সক্রিয়' : currentLang === 'it' ? 'GPS Attivo' : 'GPS Active'
+                  : currentLang === 'bn' ? 'আমার লোকেশন' : currentLang === 'it' ? 'Mia Posizione' : 'My Location'}
+              </span>
             </button>
 
             <button
@@ -624,6 +809,31 @@ export default function PrayerTimesSection() {
           </div>
         </div>
 
+        {/* Auto-Detect Success Notification Banner */}
+        {autoDetectBanner && (
+          <div className="mb-5 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300/80 dark:border-emerald-800/80 text-emerald-900 dark:text-emerald-200 text-xs flex items-center justify-between gap-3 animate-in fade-in">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                <Navigation className="w-3 h-3 fill-white" />
+              </div>
+              <p className="truncate font-medium">
+                {currentLang === 'bn'
+                  ? `আপনার বর্তমান অবস্থান অনুযায়ী ইতালির শহর (${detectedCityLabel || currentCity.nameBn}) স্বয়ংক্রিয়ভাবে সনাক্ত হয়েছে এবং নামাজের সময়সূচি আপডেট করা হয়েছে।`
+                  : currentLang === 'it'
+                  ? `Posizione rilevata automaticamente (${detectedCityLabel || currentCity.nameIt}): orari delle preghiere aggiornati via GPS.`
+                  : `Automatically detected your location in Italy (${detectedCityLabel || currentCity.nameEn}): prayer times updated via GPS.`}
+              </p>
+            </div>
+            <button
+              onClick={() => setAutoDetectBanner(false)}
+              className="p-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-white rounded-md transition-colors"
+              aria-label="Dismiss banner"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Location Error Notice if any */}
         {locationError && (
           <div className="mb-6 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300 text-xs flex items-center justify-between">
@@ -647,16 +857,19 @@ export default function PrayerTimesSection() {
             {/* Quick dropdown for all cities */}
             <div className="relative inline-block text-left">
               <select
-                value={customLocation ? 'custom' : selectedCityId}
+                value={selectedCityId}
                 onChange={(e) => {
-                  if (e.target.value === 'custom') return;
                   setCustomLocation(null);
                   setSelectedCityId(e.target.value);
+                  setIsAutoDetected(false);
+                  setAutoDetectBanner(false);
                 }}
                 className="text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
               >
                 {customLocation && (
-                  <option value="custom">📍 {customLocation.label}</option>
+                  <option value={selectedCityId}>
+                    📍 {currentLang === 'bn' ? customLocation.labelBn : currentLang === 'it' ? customLocation.labelIt : customLocation.labelEn}
+                  </option>
                 )}
                 {MAJOR_ITALIAN_CITIES.map((city) => (
                   <option key={city.id} value={city.id}>
@@ -669,22 +882,27 @@ export default function PrayerTimesSection() {
 
           {/* Quick Segmented City Buttons */}
           <div className="flex flex-wrap items-center gap-1.5">
-            {MAJOR_ITALIAN_CITIES.slice(0, showAllCities ? 20 : 8).map((city) => {
-              const isSelected = !customLocation && selectedCityId === city.id;
+            {MAJOR_ITALIAN_CITIES.slice(0, showAllCities ? MAJOR_ITALIAN_CITIES.length : 10).map((city) => {
+              const isSelected = selectedCityId === city.id;
               return (
                 <button
                   key={city.id}
                   onClick={() => {
                     setCustomLocation(null);
                     setSelectedCityId(city.id);
+                    setIsAutoDetected(false);
+                    setAutoDetectBanner(false);
                   }}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                     isSelected
                       ? 'bg-emerald-800 dark:bg-emerald-600 text-white shadow-2xs font-semibold'
                       : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  {currentLang === 'bn' ? city.nameBn : city.nameIt}
+                  {isSelected && isAutoDetected && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping" />
+                  )}
+                  <span>{currentLang === 'bn' ? city.nameBn : city.nameIt}</span>
                 </button>
               );
             })}
@@ -704,10 +922,16 @@ export default function PrayerTimesSection() {
 
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 text-xs text-emerald-200 mb-1">
-                <span className="font-semibold text-emerald-300">
+              <div className="flex items-center gap-2 text-xs text-emerald-200 mb-1 flex-wrap">
+                <span className="font-semibold text-emerald-300 text-sm">
                   {currentLang === 'bn' ? currentCity.nameBn : currentCity.nameIt}
                 </span>
+                {isAutoDetected && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-3xs font-semibold bg-emerald-700/80 text-emerald-100 border border-emerald-500/40">
+                    <Navigation className="w-2.5 h-2.5 text-amber-300 fill-amber-300" />
+                    <span>{currentLang === 'bn' ? 'জিপিএস সনাক্তকরণ' : currentLang === 'it' ? 'Rilevato GPS' : 'GPS Detected'}</span>
+                  </span>
+                )}
                 <span aria-hidden="true">·</span>
                 <span suppressHydrationWarning>{prayerMeta.hijriDate} {prayerMeta.hijriMonth} {prayerMeta.hijriYear} AH</span>
                 <span aria-hidden="true">·</span>
